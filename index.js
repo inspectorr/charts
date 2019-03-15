@@ -1,1 +1,1 @@
-console.log(chartData);
+console.log(chartsData);
