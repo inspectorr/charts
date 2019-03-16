@@ -1,152 +1,155 @@
 function Slider(options) {
-  var elem = options.elem;
-  var thumbElem = elem.querySelector('.thumb');
+  const {slider, thumb, minWidth} = options;
 
-  var sliderCoords, thumbCoords, shiftX, shiftY;
-  var startWidth, startExpandRightX, startExpandLeftX, startLeftBorderX;
-  const minWidth = 60;
+  const center = thumb.querySelector('.center');
+  const right = thumb.querySelector('.right');
+  const left = thumb.querySelector('.left');
 
-  elem.ondragstart = function() {
-    return false;
+  let sliderCoords, thumbCoords;
+
+  function updateCoords() {
+    thumbCoords = thumb.getBoundingClientRect();
+    sliderCoords = slider.getBoundingClientRect();
+  }
+
+  let startWidth, startExpand, startLeft, shiftX, shiftY;
+
+  slider.addEventListener('mousedown', (e) => {
+    e.preventDefault();
+    handleMouseDown(e.target, e.clientX);
+  });
+
+  slider.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    handleTouchStart(e.target, e.targetTouches[0].clientX);
+  });
+
+  function handleMouseDown(target, xStart) {
+    switch (target) {
+      case center:
+        startDrag(xStart);
+        document.addEventListener('mousemove', onMouseDragMove);
+        document.addEventListener('mouseup', onMouseDragEnd);
+        break;
+      case right:
+        startExpandRight(xStart);
+        document.addEventListener('mousemove', onMouseExpandRightMove);
+        document.addEventListener('mouseup', onMouseExpandRightEnd);
+        break;
+      case left:
+        startExpandLeft(xStart);
+        document.addEventListener('mousemove', onMouseExpandRightMove);
+        document.addEventListener('mouseup', onMouseExpandRightEnd);
+        break;
+    }
   };
 
-  elem.onmousedown = function(event) {
-    if (event.target.closest('.left')) {
-      startExpandLeft(event.clientX, event.clientY);
-      return false;
+  function handleTouchStart(target, xStart) {
+    switch (target) {
+      case center:
+        startDrag(xStart);
+        document.addEventListener('touchmove', onTouchDragMove);
+        document.addEventListener('touchend', onTouchDragEnd);
+        break;
+      case right:
+        startExpandRight(xStart);
+        document.addEventListener('touchmove', onTouchExpandRightMove);
+        document.addEventListener('touchend', onTouchExpandRightEnd);
+        break;
+      case left:
+        startExpandLeft(xStart);
+        document.addEventListener('touchmove', onTouchExpandRightMove);
+        document.addEventListener('touchend', onTouchExpandRightEnd);
+        break;
     }
+  };
 
-    if (event.target.closest('.right')) {
-      startExpandRight(event.clientX, event.clientY);
-      return false;
-    }
-
-    if (event.target.closest('.center')) {
-      startDrag(event.clientX, event.clientY);
-      return false; // disable selection start (cursor change)
-    }
+  function startDrag(xStart) {
+    updateCoords();
+    shiftX = xStart - thumbCoords.left;
   }
 
-  function startDrag(startClientX, startClientY) {
-    thumbCoords = thumbElem.getBoundingClientRect();
-    sliderCoords = elem.getBoundingClientRect();
-
-    shiftX = startClientX - thumbCoords.left;
-    shiftY = startClientY - thumbCoords.top;
-
-    document.addEventListener('mousemove', onDocumentMouseMove);
-    document.addEventListener('mouseup', onDocumentMouseUp);
-  }
-
-  function startExpandRight(startClientX, startClientY) {
-    thumbCoords = thumbElem.getBoundingClientRect();
-    sliderCoords = elem.getBoundingClientRect();
-
-    startExpandRightX = startClientX;
+  function startExpandRight(xStart) {
+    updateCoords();
+    startExpand = xStart;
     startWidth = thumbCoords.width;
-
-    document.addEventListener('mousemove', onDocumentMouseMoveExpandRight);
-    document.addEventListener('mouseup', onDocumentMouseUpExpandRight);
   }
 
-  function startExpandLeft(startClientX, startClientY) {
-    thumbCoords = thumbElem.getBoundingClientRect();
-    sliderCoords = elem.getBoundingClientRect();
-
-    startExpandLeftX = startClientX;
+  function startExpandLeft(xStart) {
+    updateCoords();
+    startExpand = xStart;
     startWidth = thumbCoords.width;
-    startLeftBorderX = thumbCoords.left - sliderCoords.left;
-
-    document.addEventListener('mousemove', onDocumentMouseMoveExpandLeft);
-    document.addEventListener('mouseup', onDocumentMouseUpExpandLeft);
+    startLeft = thumbCoords.left - sliderCoords.left;
   }
 
   function moveTo(clientX) {
-    var newLeft = clientX - shiftX - sliderCoords.left;
+    let newLeft = clientX - shiftX - sliderCoords.left;
+    if (newLeft < 0) newLeft = 0;
 
-    if (newLeft < 0) {
-      newLeft = 0;
-    }
+    let rightEdge = slider.offsetWidth - thumb.offsetWidth;
+    if (newLeft > rightEdge) newLeft = rightEdge;
 
-    var rightEdge = elem.offsetWidth - thumbElem.offsetWidth;
-    if (newLeft > rightEdge) {
-      newLeft = rightEdge;
-    }
-
-    thumbElem.style.left = newLeft + 'px';
+    thumb.style.left = newLeft + 'px';
   }
 
   function expandRightTo(clientX) {
-    let newWidth = startWidth + clientX - startExpandRightX;
+    let newWidth = startWidth + clientX - startExpand;
 
     if (newWidth < minWidth) newWidth = minWidth;
+
     if (thumbCoords.left + newWidth > sliderCoords.right) {
       newWidth = sliderCoords.right - thumbCoords.left;
     }
 
-    thumbElem.style.width = newWidth + 'px';
+    thumb.style.width = newWidth + 'px';
   }
 
   function expandLeftTo(clientX) {
-    let shift = startExpandLeftX - clientX;
-
-    if (shift > startLeftBorderX) shift = startLeftBorderX;
+    let shift = startExpand - clientX;
+    if (shift > startLeft) shift = startLeft;
 
     let newWidth = startWidth + shift;
-    let newLeft = startLeftBorderX - shift;
+    let newLeft = startLeft - shift;
 
     if (newWidth < minWidth) {
       newWidth = minWidth;
       newLeft = startRightBorderX - minWidth;
     }
 
-    thumbElem.style.width = newWidth + 'px';
-    thumbElem.style.left = newLeft + 'px';
+    thumb.style.width = newWidth + 'px';
+    thumb.style.left = newLeft + 'px';
   }
 
-
-  function onDocumentMouseMove(e) {
+  function onMouseDragMove(e) {
     moveTo(e.clientX);
   }
 
-  function onDocumentMouseUp() {
-    endDrag();
-  }
-
-  function onDocumentMouseMoveExpandRight(e) {
-    expandRightTo(e.clientX);
-  }
-
-  function onDocumentMouseUpExpandRight() {
-    endExpandRight();
-  }
-
-  function onDocumentMouseMoveExpandLeft(e) {
+  function onMouseExpandLeftMove(e) {
     expandLeftTo(e.clientX);
   }
 
-  function onDocumentMouseUpExpandLeft() {
-    endExpandLeft();
+  function onMouseExpandRightMove(e) {
+    expandRightTo(e.clientX);
   }
 
-  function endDrag() {
-    document.removeEventListener('mousemove', onDocumentMouseMove);
-    document.removeEventListener('mouseup', onDocumentMouseUp);
+  function onMouseDragEnd() {
+    document.removeEventListener('mousemove', onMouseDragMove);
+    document.removeEventListener('mouseup', onMouseDragEnd);
   }
 
-  function endExpandRight() {
-    document.removeEventListener('mousemove', onDocumentMouseMoveExpandRight);
-    document.removeEventListener('mouseup', onDocumentMouseUpExpandRight);
+  function onMouseExpandRightEnd() {
+    document.removeEventListener('mousemove', onMouseExpandRightMove);
+    document.removeEventListener('mouseup', onMouseExpandRightEnd);
   }
 
-  function endExpandLeft() {
-    document.removeEventListener('mousemove', onDocumentMouseMoveExpandLeft);
-    document.removeEventListener('mouseup', onDocumentMouseUpExpandLeft);
+  function onMouseExpandLeftEnd() {
+    document.removeEventListener('mousemove', onMouseExpandLeftMove);
+    document.removeEventListener('mouseup', onMouseExpandLeftEnd);
   }
 
 }
 
-// 
+//
 //
 // <!DOCTYPE html>
 // <html>
