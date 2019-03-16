@@ -1,3 +1,5 @@
+'use strict';
+
 console.log(chartsData);
 // https://github.com/nwinkler/atom-keyboard-shortcuts
 
@@ -12,8 +14,8 @@ const chart = new MainChart({
   },
 });
 
-chart._createElement();
-document.body.append(chart.element);
+// chart._createElement();
+document.body.append(chart.getElement());
 
 chart.setView({
   // scaleX: 1,
@@ -21,6 +23,7 @@ chart.setView({
   // shiftX: 1,
 });
 
+// console.log(store.getPoint(0, 0));
 // console.log('globalPeak', store.globalPeak);
 // store.generateLocals(0, store.N-1);
 // console.log('localPeak', store.localPeak);
