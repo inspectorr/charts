@@ -1,18 +1,21 @@
 console.log(chartsData);
 
-// const el = document.createElement('div');
-// el.addEventListener('op', (e) => console.log(e.detail));
-// el.dispatchEvent(new CustomEvent('op', {detail: 1}));
-
 const store = new ChartStore(chartsData[4]);
 
-const chart = new ChartView({
+const chart = new MainChart({
   lines: store.lines,
   view: {
     width: 500,
     height: 300,
-    strokeWidth: 1,
+    strokeWidth: 1.5,
   },
 });
 
-chart.render();
+chart._createElement();
+document.body.append(chart.element);
+
+chart.setView({
+  // scaleX: 1,
+  // scaleY: 1,
+  // shiftX: 1,
+});
