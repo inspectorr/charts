@@ -123,28 +123,49 @@ function Slider(options) {
   function onMouseDragMove(e) {
     moveTo(e.clientX);
   }
+  function onTouchDragMove(e) {
+    moveTo(e.targetTouches[0].clientX);
+  }
 
   function onMouseExpandLeftMove(e) {
     expandLeftTo(e.clientX);
   }
+  function onTouchExpandLeftMove(e) {
+    expandLeftTo(e.targetTouches[0].clientX);
+  }
 
   function onMouseExpandRightMove(e) {
     expandRightTo(e.clientX);
+  }
+  function onTouchExpandRightMove(e) {
+    expandRightTo(e.targetTouches[0].clientX);
   }
 
   function onMouseDragEnd() {
     document.removeEventListener('mousemove', onMouseDragMove);
     document.removeEventListener('mouseup', onMouseDragEnd);
   }
+  function onTouchDragEnd() {
+    document.removeEventListener('touchmove', onTouchDragMove);
+    document.removeEventListener('touchend', onTouchDragEnd);
+  }
 
   function onMouseExpandRightEnd() {
     document.removeEventListener('mousemove', onMouseExpandRightMove);
     document.removeEventListener('mouseup', onMouseExpandRightEnd);
   }
+  function onTouchExpandRightEnd() {
+    document.removeEventListener('touchmove', onTouchExpandRightMove);
+    document.removeEventListener('touchend', onTouchExpandRightEnd);
+  }
 
   function onMouseExpandLeftEnd() {
     document.removeEventListener('mousemove', onMouseExpandLeftMove);
     document.removeEventListener('mouseup', onMouseExpandLeftEnd);
+  }
+  function onTouchExpandLeftEnd() {
+    document.removeEventListener('touchmove', onTouchExpandLeftMove);
+    document.removeEventListener('touchend', onTouchExpandLeftEnd);
   }
 
 }
