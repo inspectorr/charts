@@ -1,7 +1,5 @@
 class ChartStore {
   constructor(data) {
-    // this.data = data;
-
     let x;
     const lines = [];
 
@@ -14,7 +12,7 @@ class ChartStore {
     const N = x.length;
 
     const globalDX = this._getDX(x, 1, N-1);
-    const globalPeak = this._getPeakFromLines(lines, 1, N-1);
+    const globalPeak = this._getPeak(lines, 1, N-1);
 
     const outputLines = lines.map((line) => {
       return {
@@ -32,19 +30,20 @@ class ChartStore {
       }
     }
 
-    this.outputLines = outputLines;
+    this.N = N-1;
+    this.x = x;
+    this.lines = lines;
     this.globalDX = globalDX;
     this.globalPeak = globalPeak;
 
-    this.x = x;
-    this.lines = lines;
+    this.outputLines = outputLines;
   }
 
   _getDX(xArr, startIndex, endIndex) {
     return xArr[endIndex] - xArr[startIndex];
   }
 
-  _getPeakFromLines(lines, startIndex, endIndex) {
+  _getPeak(lines, startIndex, endIndex) {
     let I = 0, J = startIndex;
     for (let i = 0; i < lines.length; i++) {
       for (let j = startIndex; j <= endIndex; j++) {
@@ -57,11 +56,15 @@ class ChartStore {
     return lines[I][J];
   }
 
-  generateLocal() {
-
+  generateLocals(startIndex, endIndex) {
+    this.localDX = this._getDX(this.x, startIndex+1, endIndex+1);
+    this.localPeak = this._getPeak(this.lines, startIndex+1, endIndex+1);
   }
 
-  controlPoints() {
-    //
+  getPoint(lineIndex, pointIndex) {
+    return {
+      x: this.x[pointIndex+1],
+      y: this.lines[lineIndex][pointIndex+1],
+    };
   }
 }

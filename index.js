@@ -20,3 +20,7 @@ chart.setView({
   // scaleY: 1,
   // shiftX: 1,
 });
+
+// console.log('globalPeak', store.globalPeak);
+// store.generateLocals(0, store.N-1);
+// console.log('localPeak', store.localPeak);
