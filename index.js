@@ -1,27 +1,44 @@
 'use strict';
 
 console.log(chartsData);
-// https://github.com/nwinkler/atom-keyboard-shortcuts
 
-const store = new ChartStore(chartsData[0]);
-
-const chart = new MainChart({
-  lines: store.outputLines,
-  view: {
+const view = {
+  mainChart: {
     width: 500,
     height: 300,
     strokeWidth: 1.5,
   },
-});
+  chartMap: {
+    width: 500,
+    height: 50,
+    strokeWidth: 1,
+  },
+}
+
+const chart = new Chart({ data: chartsData[4], view });
+document.getElementById('root').append(chart.getElement());
+
+// https://github.com/nwinkler/atom-keyboard-shortcuts
+
+// const store = new ChartStore(chartsData[0]);
+//
+// const chart = new ChartView({
+//   lines: store.outputLines,
+//   view: {
+//     width: 500,
+//     height: 300,
+//     strokeWidth: 1.5,
+//   },
+// });
 
 // chart._createElement();
-document.body.append(chart.getElement());
+// document.body.append(chart.getElement());
 
-chart.setView({
+// chart.setView({
   // scaleX: 1,
   // scaleY: 1,
   // shiftX: 1,
-});
+// });
 
 // console.log(store.getPoint(0, 0));
 // console.log('globalPeak', store.globalPeak);
