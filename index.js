@@ -1,9 +1,10 @@
 console.log(chartsData);
+// https://github.com/nwinkler/atom-keyboard-shortcuts
 
-const store = new ChartStore(chartsData[4]);
+const store = new ChartStore(chartsData[0]);
 
 const chart = new MainChart({
-  lines: store.lines,
+  lines: store.outputLines,
   view: {
     width: 500,
     height: 300,

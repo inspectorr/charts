@@ -4,25 +4,6 @@ class Chart {
   constructor(options) {
     this.store = new ChartStore(options.data);
 
-    const mainChart = new MainChart({
-      data: this.store, // передать текущий
-      view: {
-
-      }
-    });
-
-    const chartMap = new ChartMap({
-      data: this.store, // передать весь промежуток (ГЛУПОСТЬ !)
-      view: {
-
-      },
-    });
-
-    this.mainChartElem = mainChart.render();
-    this.chartMapElem = chartMap.render();
-
-    this.elem = this._createElement(options.view);
-    // this._listen(this.elem);
   }
 
   _listen(elem) { // обработчики
@@ -32,13 +13,11 @@ class Chart {
   _createElement(view) { // разметка
     const container = document.createElement('div');
     container.append(this.mainChartElem);
-    container.append(this.chartMap);
-    return container;
+    container.append(this.chartMapElem);
+    this.element = container;
   }
 
-  render() {
-    return this.elem;
-  }
+
 }
 
 class ChartView {

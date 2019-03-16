@@ -13,19 +13,8 @@ class ChartStore {
 
     const N = x.length;
 
-    const xS = x[1];
-    const xE = x[N-1];
-    const dX = xE - xS;
-
-    const linePeaks = lines.map((line) => {
-      let peak = -Infinity;
-      for (let i = 1; i < line.length; i++) {
-        if (line[i] > peak) peak = line[i];
-      }
-      return peak;
-    });
-
-    const peak = Math.max(...linePeaks);
+    const globalDX = this._getDX(x, 1, N-1);
+    const globalPeak = this._getPeakFromLines(lines, 1, N-1);
 
     const outputLines = lines.map((line) => {
       return {
@@ -37,13 +26,39 @@ class ChartStore {
 
     for (let i = 0; i < lines.length; i++) {
       for (let j = 1; j < N; j++) {
-        const xCoord = (x[j] - xS) / dX;
-        const yCoord = lines[i][j] / peak;
+        const xCoord = (x[j] - x[1]) / globalDX;
+        const yCoord = lines[i][j] / globalPeak;
         outputLines[i].points += `${xCoord} ${yCoord} `;
       }
     }
 
-    this.lines = outputLines;
+    this.outputLines = outputLines;
+    this.globalDX = globalDX;
+    this.globalPeak = globalPeak;
+
+    this.x = x;
+    this.lines = lines;
+  }
+
+  _getDX(xArr, startIndex, endIndex) {
+    return xArr[endIndex] - xArr[startIndex];
+  }
+
+  _getPeakFromLines(lines, startIndex, endIndex) {
+    let I = 0, J = startIndex;
+    for (let i = 0; i < lines.length; i++) {
+      for (let j = startIndex; j <= endIndex; j++) {
+        if (lines[i][j] > lines[I][J]) {
+          I = i;
+          J = j;
+        }
+      }
+    }
+    return lines[I][J];
+  }
+
+  generateLocal() {
+
   }
 
   controlPoints() {
