@@ -2,6 +2,8 @@
 
 console.log(chartsData);
 
+const root = document.getElementById('root');
+
 const clientWidth = document.documentElement.clientWidth;
 
 const view = {
@@ -16,14 +18,15 @@ const view = {
     strokeWidth: 1,
     thumb: {
       minWidth: 70,
-      width: 100,
+      width: 150,
       right: 0,
     }
   },
 }
 
-const chart = new Chart({ data: chartsData[1], view });
-document.getElementById('root').append(chart.getElement());
+const chart = new Chart({ data: chartsData[4], view });
+root.append(chart.getElement());
+chart.onMount();
 
 // chart.setMode('night');
 
@@ -46,7 +49,7 @@ document.getElementById('root').append(chart.getElement());
 // chart.setView({
   // scaleX: 1,
   // scaleY: 1,
-  // shiftX: 1,
+  // shiftX: 0,
 // });
 
 // console.log(store.getPoint(0, 0));

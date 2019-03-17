@@ -30,7 +30,7 @@ class ChartStore {
       }
     }
 
-    this.N = N-1;
+    this.lastIndex = N-2;
     this.x = x;
     this.lines = lines;
     this.globalDX = globalDX;

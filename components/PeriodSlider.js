@@ -4,13 +4,8 @@ function PeriodSlider(options) {
     outLeft, outLeftWidth,
     outRight,
     thumb, thumbWidth, thumbMinWidth,
-    onPeriodChange
+    period, onPeriodChange
   } = options;
-
-  const period = {
-    left: outLeftWidth,
-    width: thumbWidth,
-  };
 
   const center = thumb.querySelector('.center');
   const right = thumb.querySelector('.right');
@@ -101,11 +96,11 @@ function PeriodSlider(options) {
       newLeft = maxOut;
     }
 
-    period.left = newLeft;
-    onPeriodChange(period);
-
     outLeft.style.width = newLeft + 'px';
     outRight.style.width = newRight + 'px';
+
+    period.left = newLeft;
+    onPeriodChange(period);
   }
 
   function expandRightTo(clientX) {
@@ -115,10 +110,10 @@ function PeriodSlider(options) {
     if (newRight < 0) newRight = 0;
     if (newRight > maxOut) newRight = maxOut;
 
+    outRight.style.width = newRight + 'px';
+
     period.width = thumb.offsetWidth;
     onPeriodChange(period);
-
-    outRight.style.width = newRight + 'px';
   }
 
   function expandLeftTo(clientX) {
@@ -128,11 +123,11 @@ function PeriodSlider(options) {
     if (newLeft < 0) newLeft = 0;
     if (newLeft > maxOut) newLeft = maxOut;
 
+    outLeft.style.width = newLeft + 'px';
+
     period.left = newLeft;
     period.width = thumb.offsetWidth;
     onPeriodChange(period);
-
-    outLeft.style.width = newLeft + 'px';
   }
 
   function onMouseDragMove(e) {

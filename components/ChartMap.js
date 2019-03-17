@@ -34,22 +34,34 @@ class ChartMap extends ChartView {
 
     this.element.append(slider);
 
+    this.period = {
+      left: outLeftWidth,
+      width: thumbWidth,
+    };
+
     // !!! осторожно: слайдера еще нет в DOM.
     new PeriodSlider({
       slider,
       outLeft, outLeftWidth,
       outRight,
       thumb, thumbWidth, thumbMinWidth,
+      period: this.period,
       onPeriodChange: this._onPeriodChange.bind(this),
     });
   }
 
   _onPeriodChange(period) {
     const periodEvent = new CustomEvent('period', {
-      detail: period,
+      detail: {
+        period,
+      },
     });
 
     this.periodEventTarget.dispatchEvent(periodEvent);
+  }
+
+  onMount() {
+    this._onPeriodChange(this.period);
   }
 
   setPeriodEventTarget(target) {

@@ -32,11 +32,29 @@ class Chart {
     this.element = container;
   }
 
+  _calculateIndexes(period) {
+    this.indexStart = Math.ceil(period.left*this.store.lastIndex / this.chartMap.view.width);
+    this.indexEnd = Math.floor((period.left+period.width)*this.store.lastIndex / this.chartMap.view.width);
+  }
+
+  _scrollMainChart(period) {
+    const scaleX = this.chartMap.view.width / period.width;
+    const scaleY = this.store.globalPeak / this.store.localPeak;
+    const shiftX = period.left * scaleX;
+    this.mainChart.setView({ scaleX, scaleY, shiftX });
+  }
+
   _listen() {
     this.chartMap.setPeriodEventTarget(this.element);
     this.element.addEventListener('period', (e) => {
-      console.log('period change', e.detail.left, e.detail.width);
+      this._calculateIndexes(e.detail.period);
+      this.store.generateLocals(this.indexStart, this.indexEnd);
+      this._scrollMainChart(e.detail.period);
     });
+  }
+
+  onMount() {
+    this.chartMap.onMount();
   }
 
   getElement() {
