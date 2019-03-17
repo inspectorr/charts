@@ -39,9 +39,11 @@ class Chart {
 
   _scrollMainChart(period) {
     const scaleX = this.chartMap.view.width / period.width;
-    const scaleY = this.store.globalPeak / this.store.localPeak;
+    // const scaleY = this.store.globalPeak / this.store.localPeak;
     const shiftX = period.left * scaleX;
-    this.mainChart.setView({ scaleX, scaleY, shiftX });
+    console.log(period.left, scaleX.toFixed(2), shiftX.toFixed(2));
+    // this.mainChart.setView({ scaleX, scaleY, shiftX });
+    this.mainChart.setView({ scaleX, shiftX });
   }
 
   _listen() {
