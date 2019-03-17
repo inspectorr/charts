@@ -1,14 +1,21 @@
 function ExpandableSlider(options) {
   const {slider, thumb, minWidth} = options;
 
-  const outLeft = slider.querySelector('.out-left');
-  const outRight = slider.querySelector('.out-right');
+  const outLeft = slider.querySelector('out-left');
+  const outRight = slider.querySelector('out-right');
 
   const center = thumb.querySelector('.center');
   const right = thumb.querySelector('.right');
   const left = thumb.querySelector('.left');
 
-  let startX, startLeft, startRight, maxOut;
+  let sliderCoords, thumbCoords;
+
+  function updateCoords() {
+    thumbCoords = thumb.getBoundingClientRect();
+    sliderCoords = slider.getBoundingClientRect();
+  }
+
+  let startWidth, startExpand, startLeft, startRight, shiftX;
 
   slider.addEventListener('mousedown', (e) => {
     e.preventDefault();
@@ -20,97 +27,103 @@ function ExpandableSlider(options) {
     handleTouchStart(e.target, e.targetTouches[0].clientX);
   }, {passive: true});
 
-  function handleMouseDown(target, x) {
+  function handleMouseDown(target, xStart) {
     switch (target) {
       case center:
-        startDrag(x);
+        startDrag(xStart);
         document.addEventListener('mousemove', onMouseDragMove);
         document.addEventListener('mouseup', onMouseDragEnd);
         break;
       case right:
-        startExpandRight(x);
+        startExpandRight(xStart);
         document.addEventListener('mousemove', onMouseExpandRightMove);
         document.addEventListener('mouseup', onMouseExpandRightEnd);
         break;
       case left:
-        startExpandLeft(x);
+        startExpandLeft(xStart);
         document.addEventListener('mousemove', onMouseExpandLeftMove);
         document.addEventListener('mouseup', onMouseExpandLeftEnd);
         break;
     }
   };
 
-  function handleTouchStart(target, x) {
+  function handleTouchStart(target, xStart) {
     switch (target) {
       case center:
-        startDrag(x);
+        startDrag(xStart);
         document.addEventListener('touchmove', onTouchDragMove);
         document.addEventListener('touchend', onTouchDragEnd);
         break;
       case right:
-        startExpandRight(x);
+        startExpandRight(xStart);
         document.addEventListener('touchmove', onTouchExpandRightMove);
         document.addEventListener('touchend', onTouchExpandRightEnd);
         break;
       case left:
-        startExpandLeft(x);
+        startExpandLeft(xStart);
         document.addEventListener('touchmove', onTouchExpandLeftMove);
         document.addEventListener('touchend', onTouchExpandLeftEnd);
         break;
     }
   };
 
-  function startDrag(x) {
-    startX = x;
-    startLeft = outLeft.offsetWidth;
-    startRight = outRight.offsetWidth;
-    maxOut = slider.offsetWidth - thumb.offsetWidth;
+  function startDrag(xStart) {
+    updateCoords();
+    shiftX = xStart - thumbCoords.left;
   }
 
-  function startExpandRight(x) {
-    startX = x;
-    startRight = outRight.offsetWidth;
-    maxOut = slider.offsetWidth - outLeft.offsetWidth - minWidth;
+  function startExpandRight(xStart) {
+    updateCoords();
+    startExpand = xStart;
+    startWidth = thumbCoords.width;
   }
 
-  function startExpandLeft(x) {
-    startX = x;
-    startLeft = outLeft.offsetWidth;
-    maxOut = slider.offsetWidth - outRight.offsetWidth - minWidth;
+  function startExpandLeft(xStart) {
+    updateCoords();
+    startExpand = xStart;
+    startWidth = thumbCoords.width;
+    startLeft = thumbCoords.left - sliderCoords.left;
+    startRight = thumbCoords.right - sliderCoords.left;
   }
 
   function moveTo(clientX) {
-    shiftX = clientX - startX;
+    let newLeft = clientX - shiftX - sliderCoords.left;
+    if (newLeft < 0) newLeft = 0;
 
-    let newLeft = startLeft + shiftX;
-    let newRight = startRight - shiftX;
+    let rightEdge = slider.offsetWidth - thumb.offsetWidth;
+    if (newLeft > rightEdge) newLeft = rightEdge;
 
-    if (newLeft < 0) {
-      newLeft = 0;
-      newRight = maxOut;
-    } else if (newRight < 0) {
-      newRight = 0;
-      newLeft = maxOut;
-    }
-
-    outLeft.style.width = newLeft + 'px';
-    outRight.style.width = newRight + 'px';
+    thumb.style.left = newLeft + 'px';
   }
 
   function expandRightTo(clientX) {
-    shiftX = clientX - startX;
-    let newRight = startRight - shiftX;
-    if (newRight < 0) newRight = 0;
-    if (newRight > maxOut) newRight = maxOut;
-    outRight.style.width = newRight + 'px';
+    const shift = clientX - startExpand;
+
+    let newWidth = startWidth + shift;
+
+    if (newWidth < minWidth) newWidth = minWidth;
+
+    if (thumbCoords.left + newWidth > sliderCoords.right) {
+      newWidth = sliderCoords.right - thumbCoords.left;
+    }
+
+    thumb.style.width = newWidth + 'px';
   }
 
   function expandLeftTo(clientX) {
-    shiftX = clientX - startX;
-    let newLeft = startLeft + shiftX;
-    if (newLeft < 0) newLeft = 0;
-    if (newLeft > maxOut) newLeft = maxOut;
-    outLeft.style.width = newLeft + 'px';
+    let shift = startExpand - clientX;
+
+    if (shift > startLeft) shift = startLeft;
+
+    if (startLeft - shift > startRight - minWidth) {
+      shift = startLeft + minWidth - startRight;
+    }
+
+    const newWidth = startWidth + shift;
+    const newLeft = startLeft - shift;
+
+    thumb.style.width = newWidth + 'px';
+    thumb.style.left = newLeft + 'px';
   }
 
   function onMouseDragMove(e) {

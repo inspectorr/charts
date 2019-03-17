@@ -3,7 +3,6 @@
 console.log(chartsData);
 
 const view = {
-  mode: 'day',
   mainChart: {
     width: 600,
     height: 300,
@@ -11,13 +10,15 @@ const view = {
   },
   chartMap: {
     width: 600,
-    height: 70,
+    height: 50,
     strokeWidth: 1,
   },
 }
 
 const chart = new Chart({ data: chartsData[1], view });
 document.getElementById('root').append(chart.getElement());
+
+// chart.setMode('night');
 
 // https://github.com/nwinkler/atom-keyboard-shortcuts
 

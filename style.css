@@ -1,30 +1,76 @@
-/* .container {
-  box-sizing: border-box;
-  border: 1px solid #ccc;
-} */
+html {
+  height: 100%;
+}
 
-.slider {
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+#root {
+  text-align: center;
+}
+
+.Chart {
+  display: inline-block;
+}
+
+.Chart .main {
+  /* float: left; */
+}
+
+.Chart .map {
+  /* float: left; */
   position: relative;
 }
 
-.thumb {
+.slider {
   position: absolute;
   top: 0;
+  left: 0;
+  display: flex;
+}
+
+.out-left, .out-right {
+  position: relative;
+  /* height: 100%; */
+  /* border: 1px solid green; */
+  background-color: rgba(0, 255, 0, 0.3);
+  /* overflow: hidden; */
+  flex: none;
+  z-index: 1;
+}
+
+.out-left {
+  width: 200px;
+  left: 0;
+}
+
+.out-right {
+  width: 300px;
+  right: 0;
+}
+
+.thumb {
+  z-index: 2;
+  position: relative;
+  /* top: 0; */
   cursor: pointer;
   display: flex;
+  flex: 1;
 }
 
 .left, .right {
   border: 1px solid red;
   width: 15px;
   flex: none;
-  position: relative;
+  /* position: relative; */
 }
 
 .center {
   border: 1px solid blue;
   flex: 1;
-  position: relative;
+  /* position: relative; */
 }
 
 .left {

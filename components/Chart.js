@@ -21,10 +21,10 @@ class Chart {
     container.classList.add('Chart');
 
     const mainChartElement = this.mainChart.getElement();
-    mainChartElement.classList.add('Chart__main');
+    mainChartElement.classList.add('main');
 
     const chartMapElement = this.chartMap.getElement();
-    chartMapElement.classList.add('Chart__map');
+    chartMapElement.classList.add('map');
 
     container.append(mainChartElement);
     container.append(chartMapElement);
@@ -41,32 +41,45 @@ class Chart {
   }
 }
 
+
+
 class ChartMap extends ChartView {
   constructor(options) {
     super(options);
-
-    this.view = Object.assign
   }
 
   _createElement() {
     super._createElement();
 
-    this.element.classList.add('slider');
+    const {width, height, minWidth=70} = this.view;
+
+    const slider = document.createElement('div');
+    slider.classList.add('slider');
+    slider.style.height = height + 'px';
+    slider.style.width = width + 'px';
+
+    const outLeft = document.createElement('div');
+    outLeft.classList.add('out-left');
+    slider.append(outLeft);
 
     const thumb = document.createElement('div');
     thumb.classList.add('thumb');
-    thumb.style.height = this.view.height + 'px';
-    thumb.style.width = 50 + 'px'; ///////////////
+    thumb.style.height = height + 'px';
+    // thumb.style.width = minWidth + 'px';
     thumb.innerHTML = '<div class="left"></div><div class="center"></div><div class="right"></div>';
-    this.thumb = thumb;
-    this.element.append(this.thumb);
+    slider.append(thumb);
+
+    const outRight = document.createElement('div');
+    outRight.classList.add('out-right');
+    slider.append(outRight);
+
+    this.element.append(slider);
 
     new ExpandableSlider({
-      slider: this.element,
-      thumb: this.thumb,
-      minWidth: 50,
+      slider,
+      thumb,
+      minWidth,
     });
-
 
   }
 }
