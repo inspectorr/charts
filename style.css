@@ -1,3 +1,38 @@
-svg {
+/* .container {
+  box-sizing: border-box;
   border: 1px solid #ccc;
+} */
+
+.slider {
+  position: relative;
+}
+
+.thumb {
+  position: absolute;
+  top: 0;
+  cursor: pointer;
+  display: flex;
+}
+
+.left, .right {
+  border: 1px solid red;
+  width: 15px;
+  flex: none;
+  position: relative;
+}
+
+.center {
+  border: 1px solid blue;
+  flex: 1;
+  position: relative;
+}
+
+.left {
+  border-left-width: 5px;
+  left: 0;
+}
+
+.right {
+  border-right-width: 5px;
+  right: 0;
 }

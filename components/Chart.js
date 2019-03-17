@@ -49,9 +49,22 @@ class ChartMap extends ChartView {
   _createElement() {
     super._createElement();
 
+    this.element.classList.add('slider');
+
     const thumb = document.createElement('div');
     thumb.classList.add('thumb');
+    thumb.style.height = this.view.height + 'px';
+    thumb.style.width = 50 + 'px'; ///////////////
+    thumb.innerHTML = '<div class="left"></div><div class="center"></div><div class="right"></div>';
+    this.thumb = thumb;
+    this.element.append(this.thumb);
 
-    let mapCoords = this.element.getBoundingClientRect();
+    new ExpandableSlider({
+      slider: this.element,
+      thumb: this.thumb,
+      minWidth: 50,
+    });
+
+
   }
 }

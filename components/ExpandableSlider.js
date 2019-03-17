@@ -1,4 +1,4 @@
-function Slider(options) {
+function ExpandableSlider(options) {
   const {slider, thumb, minWidth} = options;
 
   const center = thumb.querySelector('.center');
@@ -12,7 +12,7 @@ function Slider(options) {
     sliderCoords = slider.getBoundingClientRect();
   }
 
-  let startWidth, startExpand, startLeft, shiftX, shiftY;
+  let startWidth, startExpand, startLeft, startRight, shiftX;
 
   slider.addEventListener('mousedown', (e) => {
     e.preventDefault();
@@ -38,8 +38,8 @@ function Slider(options) {
         break;
       case left:
         startExpandLeft(xStart);
-        document.addEventListener('mousemove', onMouseExpandRightMove);
-        document.addEventListener('mouseup', onMouseExpandRightEnd);
+        document.addEventListener('mousemove', onMouseExpandLeftMove);
+        document.addEventListener('mouseup', onMouseExpandLeftEnd);
         break;
     }
   };
@@ -58,8 +58,8 @@ function Slider(options) {
         break;
       case left:
         startExpandLeft(xStart);
-        document.addEventListener('touchmove', onTouchExpandRightMove);
-        document.addEventListener('touchend', onTouchExpandRightEnd);
+        document.addEventListener('touchmove', onTouchExpandLeftMove);
+        document.addEventListener('touchend', onTouchExpandLeftEnd);
         break;
     }
   };
@@ -80,6 +80,7 @@ function Slider(options) {
     startExpand = xStart;
     startWidth = thumbCoords.width;
     startLeft = thumbCoords.left - sliderCoords.left;
+    startRight = thumbCoords.right - sliderCoords.left;
   }
 
   function moveTo(clientX) {
@@ -93,8 +94,10 @@ function Slider(options) {
   }
 
   function expandRightTo(clientX) {
-    let newWidth = startWidth + clientX - startExpand;
+    const shift = clientX - startExpand;
 
+    let newWidth = startWidth + shift;
+    
     if (newWidth < minWidth) newWidth = minWidth;
 
     if (thumbCoords.left + newWidth > sliderCoords.right) {
@@ -106,15 +109,15 @@ function Slider(options) {
 
   function expandLeftTo(clientX) {
     let shift = startExpand - clientX;
+
     if (shift > startLeft) shift = startLeft;
 
-    let newWidth = startWidth + shift;
-    let newLeft = startLeft - shift;
-
-    if (newWidth < minWidth) {
-      newWidth = minWidth;
-      newLeft = startRightBorderX - minWidth;
+    if (startLeft - shift > startRight - minWidth) {
+      shift = startLeft + minWidth - startRight;
     }
+
+    const newWidth = startWidth + shift;
+    const newLeft = startLeft - shift;
 
     thumb.style.width = newWidth + 'px';
     thumb.style.left = newLeft + 'px';
@@ -191,44 +194,44 @@ function Slider(options) {
 //       background: linear-gradient(left top, #E0E0E0, #EEEEEE);
 //     }
 //
-//     .thumb {
-//       position: relative;
-//       top: -5px;
-//       left: 10px;
-//       width: 60px;
-//       height: 25px;
-//       /*border: 1px solid black;*/
-//       cursor: pointer;
-//       display: flex;
-//     }
-//
-//     .left, .right {
-//       border: 1px solid red;
-//       width: 15px;
-//       flex: none;
-//       position: relative;
-//     }
-//
-//     .center {
-//       border: 1px solid blue;
-//       flex: 1;
-//       position: relative;
-//     }
-//
-//     .left {
-//       border-left-width: 5px;
-//       left: 0;
-//     }
-//
-//     .right {
-//       border-right-width: 5px;
-//       right: 0;
-//     }
+    // .thumb {
+    //   position: relative;
+    //   top: -5px;
+    //   left: 10px;
+    //   width: 60px;
+    //   height: 25px;
+    //   /*border: 1px solid black;*/
+    //   cursor: pointer;
+    //   display: flex;
+    // }
+    //
+    // .left, .right {
+    //   border: 1px solid red;
+    //   width: 15px;
+    //   flex: none;
+    //   position: relative;
+    // }
+    //
+    // .center {
+    //   border: 1px solid blue;
+    //   flex: 1;
+    //   position: relative;
+    // }
+    //
+    // .left {
+    //   border-left-width: 5px;
+    //   left: 0;
+    // }
+    //
+    // .right {
+    //   border-right-width: 5px;
+    //   right: 0;
+    // }
 //   </style>
 // </head>
 //
 // <body>
-//   <div id="slider" class="slider">
+//   <div class="slider">
 //     <div class="thumb">
 //       <div class="left"></div>
 //       <div class="center"></div>
