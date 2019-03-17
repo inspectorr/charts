@@ -33,53 +33,13 @@ class Chart {
   }
 
   _listen() {
-
+    this.chartMap.setPeriodEventTarget(this.element);
+    this.element.addEventListener('period', (e) => {
+      console.log('period change', e.detail.left, e.detail.width);
+    });
   }
 
   getElement() {
     return this.element;
-  }
-}
-
-
-
-class ChartMap extends ChartView {
-  constructor(options) {
-    super(options);
-  }
-
-  _createElement() {
-    super._createElement();
-
-    const {width, height, minWidth=70} = this.view;
-
-    const slider = document.createElement('div');
-    slider.classList.add('slider');
-    slider.style.height = height + 'px';
-    slider.style.width = width + 'px';
-
-    const outLeft = document.createElement('div');
-    outLeft.classList.add('out-left');
-    slider.append(outLeft);
-
-    const thumb = document.createElement('div');
-    thumb.classList.add('thumb');
-    thumb.style.height = height + 'px';
-    // thumb.style.width = minWidth + 'px';
-    thumb.innerHTML = '<div class="left"></div><div class="center"></div><div class="right"></div>';
-    slider.append(thumb);
-
-    const outRight = document.createElement('div');
-    outRight.classList.add('out-right');
-    slider.append(outRight);
-
-    this.element.append(slider);
-
-    new ExpandableSlider({
-      slider,
-      thumb,
-      minWidth,
-    });
-
   }
 }

@@ -1,8 +1,16 @@
-function ExpandableSlider(options) {
-  const {slider, thumb, minWidth} = options;
+function PeriodSlider(options) {
+  const {
+    slider,
+    outLeft, outLeftWidth,
+    outRight,
+    thumb, thumbWidth, thumbMinWidth,
+    onPeriodChange
+  } = options;
 
-  const outLeft = slider.querySelector('.out-left');
-  const outRight = slider.querySelector('.out-right');
+  const period = {
+    left: outLeftWidth,
+    width: thumbWidth,
+  };
 
   const center = thumb.querySelector('.center');
   const right = thumb.querySelector('.right');
@@ -70,13 +78,13 @@ function ExpandableSlider(options) {
   function startExpandRight(x) {
     startX = x;
     startRight = outRight.offsetWidth;
-    maxOut = slider.offsetWidth - outLeft.offsetWidth - minWidth;
+    maxOut = slider.offsetWidth - outLeft.offsetWidth - thumbMinWidth;
   }
 
   function startExpandLeft(x) {
     startX = x;
     startLeft = outLeft.offsetWidth;
-    maxOut = slider.offsetWidth - outRight.offsetWidth - minWidth;
+    maxOut = slider.offsetWidth - outRight.offsetWidth - thumbMinWidth;
   }
 
   function moveTo(clientX) {
@@ -93,23 +101,37 @@ function ExpandableSlider(options) {
       newLeft = maxOut;
     }
 
+    period.left = newLeft;
+    onPeriodChange(period);
+
     outLeft.style.width = newLeft + 'px';
     outRight.style.width = newRight + 'px';
   }
 
   function expandRightTo(clientX) {
     shiftX = clientX - startX;
+
     let newRight = startRight - shiftX;
     if (newRight < 0) newRight = 0;
     if (newRight > maxOut) newRight = maxOut;
+
+    period.width = thumb.offsetWidth;
+    onPeriodChange(period);
+
     outRight.style.width = newRight + 'px';
   }
 
   function expandLeftTo(clientX) {
     shiftX = clientX - startX;
+
     let newLeft = startLeft + shiftX;
     if (newLeft < 0) newLeft = 0;
     if (newLeft > maxOut) newLeft = maxOut;
+
+    period.left = newLeft;
+    period.width = thumb.offsetWidth;
+    onPeriodChange(period);
+
     outLeft.style.width = newLeft + 'px';
   }
 

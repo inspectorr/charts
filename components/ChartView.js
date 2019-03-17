@@ -18,7 +18,6 @@ class ChartView {
 
   _createElement() {
     const container = document.createElement('div');
-    // container.classList.add('container');
     container.style.width = this.view.width + 'px';
     container.style.height = this.view.height + 'px';
 

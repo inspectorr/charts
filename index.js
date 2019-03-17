@@ -2,16 +2,23 @@
 
 console.log(chartsData);
 
+const clientWidth = document.documentElement.clientWidth;
+
 const view = {
   mainChart: {
-    width: 600,
+    width: 500,
     height: 300,
     strokeWidth: 1.5,
   },
   chartMap: {
-    width: 600,
+    width: 500,
     height: 50,
     strokeWidth: 1,
+    thumb: {
+      minWidth: 70,
+      width: 100,
+      right: 0,
+    }
   },
 }
 
