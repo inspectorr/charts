@@ -44,6 +44,8 @@ class Chart {
 class ChartMap extends ChartView {
   constructor(options) {
     super(options);
+
+    this.view = Object.assign
   }
 
   _createElement() {

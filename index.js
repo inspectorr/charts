@@ -3,19 +3,20 @@
 console.log(chartsData);
 
 const view = {
+  mode: 'day',
   mainChart: {
-    width: 500,
+    width: 600,
     height: 300,
     strokeWidth: 1.5,
   },
   chartMap: {
-    width: 500,
-    height: 50,
+    width: 600,
+    height: 70,
     strokeWidth: 1,
   },
 }
 
-const chart = new Chart({ data: chartsData[4], view });
+const chart = new Chart({ data: chartsData[1], view });
 document.getElementById('root').append(chart.getElement());
 
 // https://github.com/nwinkler/atom-keyboard-shortcuts
