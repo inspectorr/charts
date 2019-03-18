@@ -1,5 +1,6 @@
 function animate(options) {
   const start = performance.now();
+  animationInProgress = true;
 
   requestAnimationFrame(function animate(time) {
     let timeFraction = ((time - start) / options.duration).toFixed(3);
@@ -12,6 +13,8 @@ function animate(options) {
 
     if (timeFraction < 1) {
       requestAnimationFrame(animate);
+    } else {
+      animationInProgress = false;
     }
   });
 }

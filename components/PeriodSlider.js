@@ -15,7 +15,7 @@ function PeriodSlider(options) {
     speedometer = setInterval(() => {
       period.speed = Math.abs(shiftX - lastShift) / 100;
       lastShift = shiftX;
-      console.log(period.speed);
+      // console.log(period.speed);
     }, 100);
   }
 

@@ -43,17 +43,40 @@ class Chart {
     this.mainChart.setView({ scaleX, shiftX });
   }
 
-  _alignMainChart(period) {
+  _alignMainChart(speed) {
+    // console.log(speed);
+
     const startScaleY = this.mainChart.view.scaleY;
     const newScaleY = this.store.globalPeak / this.store.localPeak;
 
-    // console.log(period.speed);
+    let duration = 100 / speed;
+    if (duration > 5000) duration = 5000;
+    if (duration < 500) duration = 500;
 
-    animate({
-      duration: 500,
-      timing: (timeFraction) => Math.pow(timeFraction, 0.1),
+    let n = 0.1 / speed;
+    if (n > 0.9) n = 0.9;
+    if (n < 0.1) n = 0.1;
+
+
+    // if (speed === null || speed >= 1) {
+    //   duration = 500;
+    //   n = 0.1;
+    // } else if (speed === 0) {
+    //   duration = 5000;
+    //   n = 0.9;
+    // } else {
+    //   duration = 500 / speed;
+    //   n = 0.1 / speed;
+    // }
+
+    // duration = 500;
+    // n = 0.1;
+
+    let animationInProgress;
+    if (!animationInProgress) animate({
+      duration,
+      timing: (timeFraction) => Math.pow(timeFraction, n),
       draw: (progress) => {
-        // console.log(progress);
         this.mainChart.setView({ scaleY: startScaleY + (newScaleY-startScaleY)*progress });
       }
     });
@@ -66,7 +89,7 @@ class Chart {
 
       this._calculateIndexes(e.detail.period);
       this.store.generateLocals(this.indexStart, this.indexEnd);
-      this._alignMainChart(e.detail.period);
+      this._alignMainChart(e.detail.period.speed);
     });
   }
 
