@@ -1,17 +1,26 @@
 function PeriodSlider(options) {
   const {
-    slider,
+    slider, width,
     outLeft, outLeftWidth,
     outRight,
     thumb, thumbWidth, thumbMinWidth,
     period, onPeriodChange
   } = options;
 
+  // let speedometer, timeStart, speed = 0;
+  // function startSpeedometer() {
+  //   setInterval(() => {
+  //     timeStart = performance.now();
+  //     speed = +(Math.abs(shiftX) / (performance.now() - timeStart)).toFixed(5);
+  //     console.log(speed);
+  //   }, 100);
+  // }
+
   const center = thumb.querySelector('.center');
   const right = thumb.querySelector('.right');
   const left = thumb.querySelector('.left');
 
-  let startX, startLeft, startRight, maxOut;
+  let startX, shiftX, startLeft, startRight, maxOut;
 
   slider.addEventListener('mousedown', (e) => {
     e.preventDefault();
@@ -65,21 +74,21 @@ function PeriodSlider(options) {
 
   function startDrag(x) {
     startX = x;
-    startLeft = outLeft.offsetWidth;
-    startRight = outRight.offsetWidth;
-    maxOut = slider.offsetWidth - thumb.offsetWidth;
+    startLeft = period.left;
+    startRight = period.right;
+    maxOut = width - period.width;
   }
 
   function startExpandRight(x) {
     startX = x;
-    startRight = outRight.offsetWidth;
-    maxOut = slider.offsetWidth - outLeft.offsetWidth - thumbMinWidth;
+    startRight = period.right;
+    maxOut = width - period.left - thumbMinWidth;
   }
 
   function startExpandLeft(x) {
     startX = x;
-    startLeft = outLeft.offsetWidth;
-    maxOut = slider.offsetWidth - outRight.offsetWidth - thumbMinWidth;
+    startLeft = period.left;
+    maxOut = width - period.right - thumbMinWidth;
   }
 
   function moveTo(clientX) {
@@ -100,6 +109,7 @@ function PeriodSlider(options) {
     outRight.style.width = newRight + 'px';
 
     period.left = newLeft;
+    period.right = width - period.left - period.width;
     onPeriodChange(period);
   }
 
@@ -112,7 +122,8 @@ function PeriodSlider(options) {
 
     outRight.style.width = newRight + 'px';
 
-    period.width = thumb.offsetWidth;
+    period.right = newRight;
+    period.width = width - period.left - period.right;
     onPeriodChange(period);
   }
 
@@ -126,7 +137,7 @@ function PeriodSlider(options) {
     outLeft.style.width = newLeft + 'px';
 
     period.left = newLeft;
-    period.width = thumb.offsetWidth;
+    period.width = width - newLeft - period.right;
     onPeriodChange(period);
   }
 

@@ -37,11 +37,12 @@ class ChartMap extends ChartView {
     this.period = {
       left: outLeftWidth,
       width: thumbWidth,
+      right: width - outLeftWidth - thumbWidth,
     };
 
     // !!! осторожно: слайдера еще нет в DOM.
     new PeriodSlider({
-      slider,
+      slider, width,
       outLeft, outLeftWidth,
       outRight,
       thumb, thumbWidth, thumbMinWidth,

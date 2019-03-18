@@ -38,20 +38,34 @@ class Chart {
   }
 
   _scrollMainChart(period) {
-    const scaleX = this.chartMap.view.width / period.width;
-    // const scaleY = this.store.globalPeak / this.store.localPeak;
+    const scaleX = (this.chartMap.view.width / period.width);
     const shiftX = period.left * scaleX;
-    console.log(period.left, scaleX.toFixed(2), shiftX.toFixed(2));
-    // this.mainChart.setView({ scaleX, scaleY, shiftX });
     this.mainChart.setView({ scaleX, shiftX });
+  }
+
+  _alignMainChart() {
+    const startScaleY = this.mainChart.view.scaleY;
+    const newScaleY = this.store.globalPeak / this.store.localPeak;
+
+    animate({
+      duration: 500,
+      timing: (timeFraction) => Math.pow(timeFraction, 0.1),
+      draw: (progress) => {
+        // console.log(progress);
+        this.mainChart.setView({ scaleY: startScaleY + (newScaleY-startScaleY)*progress });
+      }
+    });
   }
 
   _listen() {
     this.chartMap.setPeriodEventTarget(this.element);
     this.element.addEventListener('period', (e) => {
+      this._scrollMainChart(e.detail.period);
+
       this._calculateIndexes(e.detail.period);
       this.store.generateLocals(this.indexStart, this.indexEnd);
-      this._scrollMainChart(e.detail.period);
+      this._alignMainChart();
+
     });
   }
 
