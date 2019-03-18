@@ -7,6 +7,23 @@ function PeriodSlider(options) {
     period, onPeriodChange
   } = options;
 
+
+  let speedometer, speed = 0;
+
+  function startSpeedometer() {
+    let lastShift = shiftX;
+    speedometer = setInterval(() => {
+      speed = Math.abs(shiftX - lastShift) / 100;
+      lastShift = shiftX;
+
+      console.log(speed);
+    }, 100);
+  }
+
+  function stopSpeedometer() {
+    clearTimeout(speedometer);
+  }
+
   // let speedometer, timeStart, speed = 0;
   // function startSpeedometer() {
   //   setInterval(() => {
@@ -20,7 +37,7 @@ function PeriodSlider(options) {
   const right = thumb.querySelector('.right');
   const left = thumb.querySelector('.left');
 
-  let startX, shiftX, startLeft, startRight, maxOut;
+  let startX, shiftX = 0, startLeft, startRight, maxOut;
 
   slider.addEventListener('mousedown', (e) => {
     e.preventDefault();
@@ -73,6 +90,7 @@ function PeriodSlider(options) {
   };
 
   function startDrag(x) {
+    startSpeedometer();
     startX = x;
     startLeft = period.left;
     startRight = period.right;
@@ -80,12 +98,14 @@ function PeriodSlider(options) {
   }
 
   function startExpandRight(x) {
+    startSpeedometer();
     startX = x;
     startRight = period.right;
     maxOut = width - period.left - thumbMinWidth;
   }
 
   function startExpandLeft(x) {
+    startSpeedometer();
     startX = x;
     startLeft = period.left;
     maxOut = width - period.right - thumbMinWidth;
@@ -93,6 +113,7 @@ function PeriodSlider(options) {
 
   function moveTo(clientX) {
     shiftX = clientX - startX;
+    // startSpeedometer();
 
     let newLeft = startLeft + shiftX;
     let newRight = startRight - shiftX;
@@ -115,6 +136,7 @@ function PeriodSlider(options) {
 
   function expandRightTo(clientX) {
     shiftX = clientX - startX;
+    // startSpeedometer();
 
     let newRight = startRight - shiftX;
     if (newRight < 0) newRight = 0;
@@ -129,6 +151,7 @@ function PeriodSlider(options) {
 
   function expandLeftTo(clientX) {
     shiftX = clientX - startX;
+    // startSpeedometer();
 
     let newLeft = startLeft + shiftX;
     if (newLeft < 0) newLeft = 0;
@@ -163,28 +186,34 @@ function PeriodSlider(options) {
   }
 
   function onMouseDragEnd() {
+    stopSpeedometer();
     document.removeEventListener('mousemove', onMouseDragMove);
     document.removeEventListener('mouseup', onMouseDragEnd);
   }
   function onTouchDragEnd() {
+    stopSpeedometer();
     document.removeEventListener('touchmove', onTouchDragMove);
     document.removeEventListener('touchend', onTouchDragEnd);
   }
 
   function onMouseExpandRightEnd() {
+    stopSpeedometer();
     document.removeEventListener('mousemove', onMouseExpandRightMove);
     document.removeEventListener('mouseup', onMouseExpandRightEnd);
   }
   function onTouchExpandRightEnd() {
+    stopSpeedometer();
     document.removeEventListener('touchmove', onTouchExpandRightMove);
     document.removeEventListener('touchend', onTouchExpandRightEnd);
   }
 
   function onMouseExpandLeftEnd() {
+    stopSpeedometer();
     document.removeEventListener('mousemove', onMouseExpandLeftMove);
     document.removeEventListener('mouseup', onMouseExpandLeftEnd);
   }
   function onTouchExpandLeftEnd() {
+    stopSpeedometer();
     document.removeEventListener('touchmove', onTouchExpandLeftMove);
     document.removeEventListener('touchend', onTouchExpandLeftEnd);
   }
