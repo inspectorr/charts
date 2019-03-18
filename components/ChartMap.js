@@ -38,6 +38,7 @@ class ChartMap extends ChartView {
       left: outLeftWidth,
       width: thumbWidth,
       right: width - outLeftWidth - thumbWidth,
+      speed: null, 
     };
 
     // !!! осторожно: слайдера еще нет в DOM.

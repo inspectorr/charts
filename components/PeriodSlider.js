@@ -8,20 +8,20 @@ function PeriodSlider(options) {
   } = options;
 
 
-  let speedometer, speed = 0;
+  // let speedometer, speed = 0;
+  let speedometer;
   function startSpeedometer() {
     let lastShift = shiftX;
     speedometer = setInterval(() => {
-      speed = Math.abs(shiftX - lastShift) / 100;
+      period.speed = Math.abs(shiftX - lastShift) / 100;
       lastShift = shiftX;
-
-      console.log(speed);
+      console.log(period.speed);
     }, 100);
   }
 
   function stopSpeedometer() {
     clearTimeout(speedometer);
-    speed = 0;
+    // speed = 0;
   }
 
   const center = thumb.querySelector('.center');

@@ -43,9 +43,11 @@ class Chart {
     this.mainChart.setView({ scaleX, shiftX });
   }
 
-  _alignMainChart() {
+  _alignMainChart(period) {
     const startScaleY = this.mainChart.view.scaleY;
     const newScaleY = this.store.globalPeak / this.store.localPeak;
+
+    // console.log(period.speed);
 
     animate({
       duration: 500,
@@ -64,8 +66,7 @@ class Chart {
 
       this._calculateIndexes(e.detail.period);
       this.store.generateLocals(this.indexStart, this.indexEnd);
-      this._alignMainChart();
-
+      this._alignMainChart(e.detail.period);
     });
   }
 
