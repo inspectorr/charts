@@ -9,7 +9,6 @@ function PeriodSlider(options) {
 
 
   let speedometer, speed = 0;
-
   function startSpeedometer() {
     let lastShift = shiftX;
     speedometer = setInterval(() => {
@@ -22,16 +21,8 @@ function PeriodSlider(options) {
 
   function stopSpeedometer() {
     clearTimeout(speedometer);
+    speed = 0;
   }
-
-  // let speedometer, timeStart, speed = 0;
-  // function startSpeedometer() {
-  //   setInterval(() => {
-  //     timeStart = performance.now();
-  //     speed = +(Math.abs(shiftX) / (performance.now() - timeStart)).toFixed(5);
-  //     console.log(speed);
-  //   }, 100);
-  // }
 
   const center = thumb.querySelector('.center');
   const right = thumb.querySelector('.right');
