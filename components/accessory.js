@@ -1,7 +1,7 @@
 function animate(options) {
   const start = performance.now();
 
-  requestAnimationFrame(function animate(time) {
+  options.requestId = requestAnimationFrame(function animate(time) {
     let timeFraction = ((time - start) / options.duration).toFixed(3);
     if (timeFraction < 0) timeFraction = 0;
     if (timeFraction > 1) timeFraction = 1;
@@ -10,7 +10,7 @@ function animate(options) {
     options.draw(progress);
 
     if (timeFraction < 1) {
-      requestAnimationFrame(animate);
+      options.requestId = requestAnimationFrame(animate);
     }
   });
 }

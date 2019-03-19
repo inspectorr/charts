@@ -124,9 +124,14 @@ function PeriodSlider(options) {
     outLeft.style.width = newLeft + 'px';
     outRight.style.width = newRight + 'px';
 
-    period.left = newLeft;
-    period.right = width - period.left - period.width;
-    onPeriodChange(period);
+    if (period.left !== newLeft) {
+      period.left = newLeft;
+      period.right = width - period.left - period.width;
+      onPeriodChange(period);
+    }
+    // period.left = newLeft;
+    // period.right = width - period.left - period.width;
+    // onPeriodChange(period);
   }
 
   function expandRightTo(clientX) {
@@ -143,9 +148,15 @@ function PeriodSlider(options) {
 
     outRight.style.width = newRight + 'px';
 
-    period.right = newRight;
-    period.width = width - period.left - period.right;
-    onPeriodChange(period);
+    if (period.right !== newRight) {
+      period.right = newRight;
+      period.width = width - period.left - newRight;
+      onPeriodChange(period);
+    }
+
+    // period.right = newRight;
+    // period.width = width - period.left - period.right;
+    // onPeriodChange(period);
   }
 
   function expandLeftTo(clientX) {
@@ -162,9 +173,14 @@ function PeriodSlider(options) {
 
     outLeft.style.width = newLeft + 'px';
 
-    period.left = newLeft;
-    period.width = width - newLeft - period.right;
-    onPeriodChange(period);
+    if (period.left !== newLeft) {
+      period.left = newLeft;
+      period.width = width - newLeft - period.right;
+      onPeriodChange(period);
+    }
+    // period.left = newLeft;
+    // period.width = width - newLeft - period.right;
+    // onPeriodChange(period);
   }
 
   function onMouseDragMove(e) {
