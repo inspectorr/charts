@@ -7,21 +7,18 @@ function PeriodSlider(options) {
     period, onPeriodChange
   } = options;
 
-
-  // let speedometer, speed = 0;
   let speedometer;
   function startSpeedometer() {
     let lastShift = shiftX;
     speedometer = setInterval(() => {
-      period.speed = Math.abs(shiftX - lastShift) / 100;
+      period.speed = Math.abs(shiftX - lastShift) / 50;
       lastShift = shiftX;
-      // console.log(period.speed);
-    }, 100);
+      console.log(period.speed);
+    }, 50);
   }
 
   function stopSpeedometer() {
     clearTimeout(speedometer);
-    // speed = 0;
   }
 
   const center = thumb.querySelector('.center');
@@ -104,7 +101,6 @@ function PeriodSlider(options) {
 
   function moveTo(clientX) {
     shiftX = clientX - startX;
-    // startSpeedometer();
 
     let newLeft = startLeft + shiftX;
     let newRight = startRight - shiftX;
@@ -127,7 +123,6 @@ function PeriodSlider(options) {
 
   function expandRightTo(clientX) {
     shiftX = clientX - startX;
-    // startSpeedometer();
 
     let newRight = startRight - shiftX;
     if (newRight < 0) newRight = 0;
@@ -142,7 +137,6 @@ function PeriodSlider(options) {
 
   function expandLeftTo(clientX) {
     shiftX = clientX - startX;
-    // startSpeedometer();
 
     let newLeft = startLeft + shiftX;
     if (newLeft < 0) newLeft = 0;
