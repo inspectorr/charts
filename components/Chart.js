@@ -70,10 +70,17 @@ class Chart {
   }
 
   _alignMainChart(steps) {
-    console.log(steps);
+    if (steps < 1) {
+      this.mainChart.setView({ scaleY: this.store.globalPeak / this.currentLocalPeak });
+      return;
+    }
+
     const startScaleY = this.mainChart.view.scaleY;
     const newScaleY = this.store.globalPeak / this.currentLocalPeak;
-    const duration = 50 + 100*steps;
+    const dY = Math.abs(this.lastLocalPeak - this.currentLocalPeak) / this.store.globalPeak;
+    // const K = 500;
+    const duration = 500*dY + 100*steps;
+    console.log(dY, steps, duration);
     const timing = (time) => time;
     // const timing = steps > 2 ? (time) => time : (time) => Math.pow(time, 0.2);
 
@@ -107,8 +114,11 @@ class Chart {
       this._scrollMainChart(e.detail.period);
 
       this._calculateIndexes(e.detail.period);
-
       this.currentLocalPeak = this.store.getLocalPeak(this.indexStart, this.indexEnd);
+      if (!this.lastLocalPeak) { // первый раз
+        this.mainChart.setView({ scaleY: this.store.globalPeak / this.currentLocalPeak });
+      }
+
       const peakForNextIndexes = this._getPeakForNextIndexes(e.detail.period);
 
       if (this.lastPeriodMovementType !== e.detail.period.movementType) {
@@ -121,13 +131,13 @@ class Chart {
 
       console.log(e.detail.period.movementType, this.lastLocalPeak, this.currentLocalPeak, peakForNextIndexes);
 
-      if (this.currentLocalPeak !== this.lastLocalPeak) { // момент изменения пика
+      if (this.lastLocalPeak && this.currentLocalPeak !== this.lastLocalPeak) { // момент изменения пика
         this._cancelMainChartAlignment();
         this._alignMainChart(this.predictStageSteps);
         this.predictStageSteps = 0;
-        this.lastLocalPeak = this.currentLocalPeak;
       }
 
+      this.lastLocalPeak = this.currentLocalPeak;
       this.lastPeriodMovementType = e.detail.period.movementType;
     });
   }
