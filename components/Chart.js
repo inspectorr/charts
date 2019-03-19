@@ -69,83 +69,28 @@ class Chart {
     return peak;
   }
 
-  // _animationQueue = [];
-  //
-  // _addToAnimationQueue(func) {
-  //   this._animationQueue.push(func);
-  //   if (!this._processingAnimationQueue) {
-  //     this._processAnimationQueue();
-  //   }
-  // }
-  //
-  // _processingAnimationQueue = false;
-  //
-  // _processAnimationQueue() {
-  //   if (!this._animationQueue[0]) {
-  //     this._processingAnimationQueue = false;
-  //     return;
-  //   }
-  //
-  //   this._processingAnimationQueue = true;
-  //
-  //   this._animationQueue[0] = new Promise((done) => {
-  //     this._animationQueue[0](done);
-  //   });
-  //
-  //   this._animationQueue[0].then(() => {
-  //     this._animationQueue.shift();
-  //     this._processAnimationQueue();
-  //   });
-  // }
-
-  // _currentAnimation = null;
-
   _alignMainChart(steps) {
+    console.log(steps);
     const startScaleY = this.mainChart.view.scaleY;
     const newScaleY = this.store.globalPeak / this.currentLocalPeak;
-    const duration = 300 + 100*steps;
+    const duration = 50 + 100*steps;
+    const timing = (time) => time;
+    // const timing = steps > 2 ? (time) => time : (time) => Math.pow(time, 0.2);
 
     animate({
-      requestId: this.currentAnimationId,
+      context: this,
       duration,
-      timing: (timeFraction) => timeFraction,
+      timing,
       draw: (progress) => {
         this.mainChart.setView({ scaleY: startScaleY + (newScaleY - startScaleY)*progress });
       }
     });
 
-
-
-    //
-    // // if (this.store.localPeak === this.lastLocalPeak) return;
-    // if (this.currentLocalPeak === this.lastLocalPeak) return;
-    //
-    // const lastScaleY = this.lastScaleY ? this.lastScaleY : this.mainChart.view.scaleY;
-    // // const newScaleY = this.store.globalPeak / this.store.localPeak;
-    // const newScaleY = this.store.globalPeak / this.currentLocalPeak;
-    // // const scaleDiff = Math.abs(lastScaleY - newScaleY);
-    // // const heightDiff = this.mainChart.view.height * scaleDiff;
-    // // const duration = period.speed ? heightDiff / period.speed : 100; // !!!! внимание хак
-    // const duration = 300 + 30*cnt;
-    //
-    // this._addToAnimationQueue((done) => {
-    //   animate({
-    //     duration,
-    //     timing: (timeFraction) => timeFraction,
-    //     draw: (progress) => {
-    //       this.mainChart.setView({ scaleY: lastScaleY + (newScaleY - lastScaleY)*progress });
-    //       if (progress === 1) done();
-    //     }
-    //   });
-    // });
-    //
-    // this.lastScaleY = newScaleY;
-    // // this.lastLocalPeak = this.store.localPeak;
-    // this.lastLocalPeak = this.currentLocalPeak;
+    console.log(`animation id=${this.currentAnimationId} started`);
   }
 
   _cancelMainChartAlignment() {
-    if (this.currentAnimation === null) return;
+    console.log(`animation id=${this.currentAnimationId} canceled`);
     cancelAnimationFrame(this.currentAnimationId);
     this.currentAnimationId = null;
   }
@@ -155,8 +100,6 @@ class Chart {
     const shiftX = period.left * scaleX;
     this.mainChart.setView({ scaleX, shiftX });
   }
-
-  // predictStageSteps = 0;
 
   _listen() {
     this.chartMap.setPeriodEventTarget(this.element);
@@ -178,16 +121,12 @@ class Chart {
 
       console.log(e.detail.period.movementType, this.lastLocalPeak, this.currentLocalPeak, peakForNextIndexes);
 
-      if (this.currentLocalPeak !== this.lastLocalPeak) { // в момент изменения
+      if (this.currentLocalPeak !== this.lastLocalPeak) { // момент изменения пика
         this._cancelMainChartAlignment();
         this._alignMainChart(this.predictStageSteps);
         this.predictStageSteps = 0;
         this.lastLocalPeak = this.currentLocalPeak;
       }
-
-
-
-      // console.log(this.predictStageSteps);
 
       this.lastPeriodMovementType = e.detail.period.movementType;
     });
