@@ -66,20 +66,24 @@ class Chart {
     });
   }
 
-  _alignMainChart(period) {
+  _alignMainChart(cnt) {
+    
 
 
 
 
 
-
-    // if (this.store.localPeak === this.lastLocalPeak) return;
+    //
+    // // if (this.store.localPeak === this.lastLocalPeak) return;
+    // if (this.currentLocalPeak === this.lastLocalPeak) return;
     //
     // const lastScaleY = this.lastScaleY ? this.lastScaleY : this.mainChart.view.scaleY;
-    // const newScaleY = this.store.globalPeak / this.store.localPeak;
-    // const scaleDiff = Math.abs(lastScaleY - newScaleY);
-    // const heightDiff = this.mainChart.view.height * scaleDiff;
-    // const duration = period.speed ? heightDiff / period.speed : 100; // !!!! внимание хак
+    // // const newScaleY = this.store.globalPeak / this.store.localPeak;
+    // const newScaleY = this.store.globalPeak / this.currentLocalPeak;
+    // // const scaleDiff = Math.abs(lastScaleY - newScaleY);
+    // // const heightDiff = this.mainChart.view.height * scaleDiff;
+    // // const duration = period.speed ? heightDiff / period.speed : 100; // !!!! внимание хак
+    // const duration = 300 + 30*cnt;
     //
     // this._addToAnimationQueue((done) => {
     //   animate({
@@ -93,7 +97,8 @@ class Chart {
     // });
     //
     // this.lastScaleY = newScaleY;
-    // this.lastLocalPeak = this.store.localPeak;
+    // // this.lastLocalPeak = this.store.localPeak;
+    // this.lastLocalPeak = this.currentLocalPeak;
   }
 
   _scrollMainChart(period) {
@@ -131,6 +136,8 @@ class Chart {
     return peak;
   }
 
+  cnt = 0;
+
   _listen() {
     this.chartMap.setPeriodEventTarget(this.element);
     this.element.addEventListener('period', (e) => {
@@ -139,7 +146,17 @@ class Chart {
       this._calculateIndexes(e.detail.period);
 
       this.currentLocalPeak = this.store.getLocalPeak(this.indexStart, this.indexEnd);
-      const peakForNextPoints = this._getPeakForNextPoints(e.detail.period);
+      const peakForNextIndexes = this._getPeakForNextIndexes(e.detail.period);
+      // console.log(this.currentLocalPeak, peakForNextIndexes);
+
+      console.log(this.cnt);
+
+      if (peakForNextIndexes && this.currentLocalPeak !== peakForNextIndexes) {
+        this.cnt++;
+      } else {
+        this._alignMainChart(this.cnt);
+        this.cnt = 0;
+      }
 
       // this.store.getLocals(this.indexStart, this.indexEnd);
       // this._alignMainChart(e.detail.period);
