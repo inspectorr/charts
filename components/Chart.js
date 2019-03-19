@@ -70,16 +70,16 @@ class Chart {
   }
 
   _alignMainChart(steps) {
-    if (steps < 1) {
-      this.mainChart.setView({ scaleY: this.store.globalPeak / this.currentLocalPeak });
-      return;
-    }
+    // if (steps < 1) {
+    //   this.mainChart.setView({ scaleY: this.store.globalPeak / this.currentLocalPeak });
+    //   return;
+    // }
 
     const startScaleY = this.mainChart.view.scaleY;
     const newScaleY = this.store.globalPeak / this.currentLocalPeak;
     const dY = Math.abs(this.lastLocalPeak - this.currentLocalPeak) / this.store.globalPeak;
     // const K = 500;
-    const duration = 500*dY + 100*steps;
+    const duration = 100 + 600*dY + 100*steps;
     console.log(dY, steps, duration);
     const timing = (time) => time;
     // const timing = steps > 2 ? (time) => time : (time) => Math.pow(time, 0.2);
@@ -103,9 +103,25 @@ class Chart {
   }
 
   _scrollMainChart(period) {
-    const scaleX = (this.chartMap.view.width / period.width);
-    const shiftX = period.left * scaleX;
-    this.mainChart.setView({ scaleX, shiftX });
+    const {scaleX, shiftX} = this.mainChart.view;
+    const newScaleX = (this.chartMap.view.width / period.width);
+    const newShiftX = period.left * newScaleX;
+
+    // this.mainChart.setView({ scaleX: newScaleX });
+
+    animate({
+      // context: this,
+      duration: 5000,
+      timing: time => time,
+      draw: (progress) => {
+        this.mainChart.setView({
+          shiftX: shiftX + (newShiftX - shiftX)*progress,
+          scaleX: scaleX + (newScaleX - scaleX)*progress,
+        });
+      }
+    });
+
+    // this.mainChart.setView({ scaleX, shiftX });
   }
 
   _listen() {
@@ -115,30 +131,29 @@ class Chart {
 
       this._calculateIndexes(e.detail.period);
       this.currentLocalPeak = this.store.getLocalPeak(this.indexStart, this.indexEnd);
-      if (!this.lastLocalPeak) { // первый раз
-        this.mainChart.setView({ scaleY: this.store.globalPeak / this.currentLocalPeak });
-      }
+      this.mainChart.setView({ scaleY: this.store.globalPeak / this.currentLocalPeak });
 
-      const peakForNextIndexes = this._getPeakForNextIndexes(e.detail.period);
+      // const peakForNextIndexes = this._getPeakForNextIndexes(e.detail.period);
+      //
+      // if (this.lastPeriodMovementType !== e.detail.period.movementType) {
+      //   this.predictStageSteps = 0;
+      // }
+      //
+      // if (this.currentLocalPeak !== peakForNextIndexes) {
+      //   this.predictStageSteps++;
+      // }
 
-      if (this.lastPeriodMovementType !== e.detail.period.movementType) {
-        this.predictStageSteps = 0;
-      }
+      // console.log(e.detail.period.movementType, this.lastLocalPeak, this.currentLocalPeak, peakForNextIndexes);
 
-      if (this.currentLocalPeak !== peakForNextIndexes) {
-        this.predictStageSteps++;
-      }
+      // if (this.lastLocalPeak && this.currentLocalPeak !== this.lastLocalPeak) { // момент изменения пика
+      //   this._cancelMainChartAlignment();
+      //   this._alignMainChart(this.predictStageSteps);
+      //   this.predictStageSteps = 0;
+      // }
 
-      console.log(e.detail.period.movementType, this.lastLocalPeak, this.currentLocalPeak, peakForNextIndexes);
 
-      if (this.lastLocalPeak && this.currentLocalPeak !== this.lastLocalPeak) { // момент изменения пика
-        this._cancelMainChartAlignment();
-        this._alignMainChart(this.predictStageSteps);
-        this.predictStageSteps = 0;
-      }
-
-      this.lastLocalPeak = this.currentLocalPeak;
-      this.lastPeriodMovementType = e.detail.period.movementType;
+      // this.lastLocalPeak = this.currentLocalPeak;
+      // this.lastPeriodMovementType = e.detail.period.movementType;
     });
   }
 

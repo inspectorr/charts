@@ -24,6 +24,6 @@ const view = {
   },
 }
 
-const chart = new Chart({ data: chartsData[0], view });
+const chart = new Chart({ data: chartsData[4], view });
 root.append(chart.getElement());
 chart.onMount();
