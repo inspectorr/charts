@@ -67,27 +67,33 @@ class Chart {
   }
 
   _alignMainChart(period) {
-    if (this.store.localPeak === this.lastLocalPeak) return;
 
-    const lastScaleY = this.lastScaleY ? this.lastScaleY : this.mainChart.view.scaleY;
-    const newScaleY = this.store.globalPeak / this.store.localPeak;
-    const scaleDiff = Math.abs(lastScaleY - newScaleY);
-    const heightDiff = this.mainChart.view.height * scaleDiff;
-    const duration = period.speed ? heightDiff / period.speed : 100; // !!!! внимание хак
 
-    this._addToAnimationQueue((done) => {
-      animate({
-        duration,
-        timing: (timeFraction) => timeFraction,
-        draw: (progress) => {
-          this.mainChart.setView({ scaleY: lastScaleY + (newScaleY - lastScaleY)*progress });
-          if (progress === 1) done();
-        }
-      });
-    });
 
-    this.lastScaleY = newScaleY;
-    this.lastLocalPeak = this.store.localPeak;
+
+
+
+    // if (this.store.localPeak === this.lastLocalPeak) return;
+    //
+    // const lastScaleY = this.lastScaleY ? this.lastScaleY : this.mainChart.view.scaleY;
+    // const newScaleY = this.store.globalPeak / this.store.localPeak;
+    // const scaleDiff = Math.abs(lastScaleY - newScaleY);
+    // const heightDiff = this.mainChart.view.height * scaleDiff;
+    // const duration = period.speed ? heightDiff / period.speed : 100; // !!!! внимание хак
+    //
+    // this._addToAnimationQueue((done) => {
+    //   animate({
+    //     duration,
+    //     timing: (timeFraction) => timeFraction,
+    //     draw: (progress) => {
+    //       this.mainChart.setView({ scaleY: lastScaleY + (newScaleY - lastScaleY)*progress });
+    //       if (progress === 1) done();
+    //     }
+    //   });
+    // });
+    //
+    // this.lastScaleY = newScaleY;
+    // this.lastLocalPeak = this.store.localPeak;
   }
 
   _scrollMainChart(period) {
@@ -96,14 +102,47 @@ class Chart {
     this.mainChart.setView({ scaleX, shiftX });
   }
 
+  _getPeakForNextIndexes(period) {
+    let peak;
+    switch (period.movementType) {
+      case 'move-right':
+        if (this.indexEnd === this.store.lastIndex) peak = null;
+        else peak = this.store.getLocalPeak(this.indexStart+1, this.indexEnd+1);
+        break;
+      case 'move-left':
+        if (this.indexStart === 0) peak = null;
+        else peak = this.store.getLocalPeak(this.indexStart-1, this.indexEnd-1);
+        break;
+      case 'expand-right-plus':
+        if (this.indexEnd === this.store.lastIndex) peak = null;
+        else peak = this.store.getLocalPeak(this.indexStart, this.indexEnd+1);
+        break;
+      case 'expand-right-minus':
+        peak = this.store.getLocalPeak(this.indexStart, this.indexEnd-1);
+        break;
+      case 'expand-left-plus':
+        if (this.indexStart === 0) peak = null;
+        else peak = this.store.getLocalPeak(this.indexStart-1, this.indexEnd);
+        break;
+      case 'expand-left-minus':
+        peak = this.store.getLocalPeak(this.indexStart+1, this.indexEnd);
+        break;
+    }
+    return peak;
+  }
+
   _listen() {
     this.chartMap.setPeriodEventTarget(this.element);
     this.element.addEventListener('period', (e) => {
       this._scrollMainChart(e.detail.period);
 
       this._calculateIndexes(e.detail.period);
-      this.store.getLocals(this.indexStart, this.indexEnd);
-      this._alignMainChart(e.detail.period);
+
+      this.currentLocalPeak = this.store.getLocalPeak(this.indexStart, this.indexEnd);
+      const peakForNextPoints = this._getPeakForNextPoints(e.detail.period);
+
+      // this.store.getLocals(this.indexStart, this.indexEnd);
+      // this._alignMainChart(e.detail.period);
     });
   }
 

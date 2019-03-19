@@ -7,25 +7,25 @@ function PeriodSlider(options) {
     period, onPeriodChange
   } = options;
 
-  let speedometer;
-  function startSpeedometer() {
-    let lastShift = shiftX;
-    speedometer = setInterval(() => {
-      period.speed = Math.abs(shiftX - lastShift) / 50;
-      lastShift = shiftX;
-      console.log(period.speed);
-    }, 50);
-  }
-
-  function stopSpeedometer() {
-    clearTimeout(speedometer);
-  }
+  // let speedometer;
+  // function startSpeedometer() {
+  //   let lastShift = shiftX;
+  //   speedometer = setInterval(() => {
+  //     period.speed = Math.abs(shiftX - lastShift) / 50;
+  //     lastShift = shiftX;
+  //     console.log(period.speed);
+  //   }, 50);
+  // }
+  //
+  // function stopSpeedometer() {
+  //   clearTimeout(speedometer);
+  // }
 
   const center = thumb.querySelector('.center');
   const right = thumb.querySelector('.right');
   const left = thumb.querySelector('.left');
 
-  let startX, shiftX = 0, startLeft, startRight, maxOut;
+  let startX, shiftX, lastShiftX, startLeft, startRight, maxOut;
 
   slider.addEventListener('mousedown', (e) => {
     e.preventDefault();
@@ -78,29 +78,37 @@ function PeriodSlider(options) {
   };
 
   function startDrag(x) {
-    startSpeedometer();
+    // startSpeedometer();
     startX = x;
+    lastShiftX = 0;
     startLeft = period.left;
     startRight = period.right;
     maxOut = width - period.width;
   }
 
   function startExpandRight(x) {
-    startSpeedometer();
+    // startSpeedometer();
     startX = x;
+    lastShiftX = 0;
     startRight = period.right;
     maxOut = width - period.left - thumbMinWidth;
   }
 
   function startExpandLeft(x) {
-    startSpeedometer();
+    // startSpeedometer();
     startX = x;
+    lastShiftX = 0;
     startLeft = period.left;
     maxOut = width - period.right - thumbMinWidth;
   }
 
   function moveTo(clientX) {
     shiftX = clientX - startX;
+
+    if (shiftX !== lastShiftX) {
+      period.movementType = shiftX > lastShiftX ? 'move-right' : 'move-left';
+      lastShiftX = shiftX;
+    }
 
     let newLeft = startLeft + shiftX;
     let newRight = startRight - shiftX;
@@ -124,6 +132,11 @@ function PeriodSlider(options) {
   function expandRightTo(clientX) {
     shiftX = clientX - startX;
 
+    if (shiftX !== lastShiftX) {
+      period.movementType = shiftX > lastShiftX ? 'expand-right-plus' : 'expand-right-minus';
+      lastShiftX = shiftX;
+    }
+
     let newRight = startRight - shiftX;
     if (newRight < 0) newRight = 0;
     if (newRight > maxOut) newRight = maxOut;
@@ -137,6 +150,11 @@ function PeriodSlider(options) {
 
   function expandLeftTo(clientX) {
     shiftX = clientX - startX;
+
+    if (shiftX !== lastShiftX) {
+      period.movementType = shiftX > lastShiftX ? 'expand-left-minus' : 'expand-left-plus';
+      lastShiftX = shiftX;
+    }
 
     let newLeft = startLeft + shiftX;
     if (newLeft < 0) newLeft = 0;
@@ -171,34 +189,34 @@ function PeriodSlider(options) {
   }
 
   function onMouseDragEnd() {
-    stopSpeedometer();
+    // stopSpeedometer();
     document.removeEventListener('mousemove', onMouseDragMove);
     document.removeEventListener('mouseup', onMouseDragEnd);
   }
   function onTouchDragEnd() {
-    stopSpeedometer();
+    // stopSpeedometer();
     document.removeEventListener('touchmove', onTouchDragMove);
     document.removeEventListener('touchend', onTouchDragEnd);
   }
 
   function onMouseExpandRightEnd() {
-    stopSpeedometer();
+    // stopSpeedometer();
     document.removeEventListener('mousemove', onMouseExpandRightMove);
     document.removeEventListener('mouseup', onMouseExpandRightEnd);
   }
   function onTouchExpandRightEnd() {
-    stopSpeedometer();
+    // stopSpeedometer();
     document.removeEventListener('touchmove', onTouchExpandRightMove);
     document.removeEventListener('touchend', onTouchExpandRightEnd);
   }
 
   function onMouseExpandLeftEnd() {
-    stopSpeedometer();
+    // stopSpeedometer();
     document.removeEventListener('mousemove', onMouseExpandLeftMove);
     document.removeEventListener('mouseup', onMouseExpandLeftEnd);
   }
   function onTouchExpandLeftEnd() {
-    stopSpeedometer();
+    // stopSpeedometer();
     document.removeEventListener('touchmove', onTouchExpandLeftMove);
     document.removeEventListener('touchend', onTouchExpandLeftEnd);
   }

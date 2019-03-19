@@ -56,10 +56,14 @@ class ChartStore {
     return lines[I][J];
   }
 
-  getLocals(startIndex, endIndex) {
-    this.localDX = this._getDX(this.x, startIndex+1, endIndex+1);
-    this.localPeak = this._getPeak(this.lines, startIndex+1, endIndex+1);
+  getLocalPeak(startIndex, endIndex) {
+    return this._getPeak(this.lines, startIndex+1, endIndex+1);
   }
+
+  // getLocals(startIndex, endIndex) {
+  //   this.localDX = this._getDX(this.x, startIndex+1, endIndex+1);
+  //   this.localPeak = this._getPeak(this.lines, startIndex+1, endIndex+1);
+  // }
 
   getPoint(lineIndex, pointIndex) {
     return {
