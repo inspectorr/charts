@@ -103,6 +103,14 @@ class Chart {
   }
 
   _scrollMainChart(period) {
+    cancelAnimationFrame(this.currentAnimationId);
+    if (this.lastShiftX) {
+      this.mainChart.setView({
+        scaleX: this.lastScaleX,
+        shiftX: this.lastShiftX,
+      });
+    }
+
     const {scaleX, shiftX} = this.mainChart.view;
     const newScaleX = (this.chartMap.view.width / period.width);
     const newShiftX = period.left * newScaleX;
@@ -110,8 +118,8 @@ class Chart {
     // this.mainChart.setView({ scaleX: newScaleX });
 
     animate({
-      // context: this,
-      duration: 5000,
+      context: this,
+      duration: 100,
       timing: time => time,
       draw: (progress) => {
         this.mainChart.setView({
@@ -120,6 +128,9 @@ class Chart {
         });
       }
     });
+
+    this.lastShiftX = newShiftX;
+    this.lastScaleX = newScaleX;
 
     // this.mainChart.setView({ scaleX, shiftX });
   }

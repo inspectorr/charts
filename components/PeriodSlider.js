@@ -78,7 +78,7 @@ function PeriodSlider(options) {
   };
 
   function startDrag(x) {
-    startSpeedometer();
+    // startSpeedometer();
     startX = x;
     lastShiftX = 0;
     startLeft = period.left;
@@ -87,7 +87,7 @@ function PeriodSlider(options) {
   }
 
   function startExpandRight(x) {
-    startSpeedometer();
+    // startSpeedometer();
     startX = x;
     lastShiftX = 0;
     startRight = period.right;
@@ -95,7 +95,7 @@ function PeriodSlider(options) {
   }
 
   function startExpandLeft(x) {
-    startSpeedometer();
+    // startSpeedometer();
     startX = x;
     lastShiftX = 0;
     startLeft = period.left;
@@ -205,34 +205,34 @@ function PeriodSlider(options) {
   }
 
   function onMouseDragEnd() {
-    stopSpeedometer();
+    // stopSpeedometer();
     document.removeEventListener('mousemove', onMouseDragMove);
     document.removeEventListener('mouseup', onMouseDragEnd);
   }
   function onTouchDragEnd() {
-    stopSpeedometer();
+    // stopSpeedometer();
     document.removeEventListener('touchmove', onTouchDragMove);
     document.removeEventListener('touchend', onTouchDragEnd);
   }
 
   function onMouseExpandRightEnd() {
-    stopSpeedometer();
+    // stopSpeedometer();
     document.removeEventListener('mousemove', onMouseExpandRightMove);
     document.removeEventListener('mouseup', onMouseExpandRightEnd);
   }
   function onTouchExpandRightEnd() {
-    stopSpeedometer();
+    // stopSpeedometer();
     document.removeEventListener('touchmove', onTouchExpandRightMove);
     document.removeEventListener('touchend', onTouchExpandRightEnd);
   }
 
   function onMouseExpandLeftEnd() {
-    stopSpeedometer();
+    // stopSpeedometer();
     document.removeEventListener('mousemove', onMouseExpandLeftMove);
     document.removeEventListener('mouseup', onMouseExpandLeftEnd);
   }
   function onTouchExpandLeftEnd() {
-    stopSpeedometer();
+    // stopSpeedometer();
     document.removeEventListener('touchmove', onTouchExpandLeftMove);
     document.removeEventListener('touchend', onTouchExpandLeftEnd);
   }
