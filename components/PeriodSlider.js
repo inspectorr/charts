@@ -7,19 +7,28 @@ function PeriodSlider(options) {
     period, onPeriodChange
   } = options;
 
-  let speedometer;
-  function startSpeedometer() {
-    let lastShift = shiftX;
-    speedometer = setInterval(() => {
-      period.speed = Math.abs(shiftX - lastShift) / 50;
-      lastShift = shiftX;
-      console.log(period.speed);
-    }, 50);
+  let shiftZeroingTimerId;
+  function shiftZeroingTimer() {
+    clearTimeout(shiftZeroingTimerId);
+    shiftZeroingTimerId = setTimeout(() => {
+      period.shift = 0;
+      onPeriodChange(period);
+    } , 300);
   }
 
-  function stopSpeedometer() {
-    clearTimeout(speedometer);
-  }
+  // let speedometer;
+  // function startSpeedometer() {
+  //   let lastShift = shiftX;
+  //   speedometer = setInterval(() => {
+  //     period.speed = Math.abs(shiftX - lastShift) / 50;
+  //     lastShift = shiftX;
+  //     console.log(period.speed);
+  //   }, 50);
+  // }
+  //
+  // function stopSpeedometer() {
+  //   clearTimeout(speedometer);
+  // }
 
   const center = thumb.querySelector('.center');
   const right = thumb.querySelector('.right');
@@ -105,11 +114,6 @@ function PeriodSlider(options) {
   function moveTo(clientX) {
     shiftX = clientX - startX;
 
-    if (shiftX !== lastShiftX) {
-      period.movementType = shiftX > lastShiftX ? 'move-right' : 'move-left';
-      lastShiftX = shiftX;
-    }
-
     let newLeft = startLeft + shiftX;
     let newRight = startRight - shiftX;
 
@@ -126,21 +130,19 @@ function PeriodSlider(options) {
 
     if (period.left !== newLeft) {
       period.left = newLeft;
-      period.right = width - period.left - period.width;
+      period.right = width - newLeft - period.width;
+      period.movementType = shiftX > lastShiftX ? 'move-right' : 'move-left';
+      period.shift = Math.abs(shiftX - lastShiftX);
+
+      shiftZeroingTimer();
       onPeriodChange(period);
+
+      lastShiftX = shiftX;
     }
-    // period.left = newLeft;
-    // period.right = width - period.left - period.width;
-    // onPeriodChange(period);
   }
 
   function expandRightTo(clientX) {
     shiftX = clientX - startX;
-
-    if (shiftX !== lastShiftX) {
-      period.movementType = shiftX > lastShiftX ? 'expand-right-plus' : 'expand-right-minus';
-      lastShiftX = shiftX;
-    }
 
     let newRight = startRight - shiftX;
     if (newRight < 0) newRight = 0;
@@ -151,21 +153,18 @@ function PeriodSlider(options) {
     if (period.right !== newRight) {
       period.right = newRight;
       period.width = width - period.left - newRight;
-      onPeriodChange(period);
-    }
+      period.movementType = shiftX > lastShiftX ? 'expand-right-plus' : 'expand-right-minus';
+      period.shift = Math.abs(shiftX - lastShiftX);
 
-    // period.right = newRight;
-    // period.width = width - period.left - period.right;
-    // onPeriodChange(period);
+      shiftZeroingTimer();
+      onPeriodChange(period);
+
+      lastShiftX = shiftX;
+    }
   }
 
   function expandLeftTo(clientX) {
     shiftX = clientX - startX;
-
-    if (shiftX !== lastShiftX) {
-      period.movementType = shiftX > lastShiftX ? 'expand-left-minus' : 'expand-left-plus';
-      lastShiftX = shiftX;
-    }
 
     let newLeft = startLeft + shiftX;
     if (newLeft < 0) newLeft = 0;
@@ -176,11 +175,14 @@ function PeriodSlider(options) {
     if (period.left !== newLeft) {
       period.left = newLeft;
       period.width = width - newLeft - period.right;
+      period.movementType = shiftX > lastShiftX ? 'expand-left-minus' : 'expand-left-plus';
+      period.shift = Math.abs(shiftX - lastShiftX);
+
+      shiftZeroingTimer();
       onPeriodChange(period);
+
+      lastShiftX = shiftX;
     }
-    // period.left = newLeft;
-    // period.width = width - newLeft - period.right;
-    // onPeriodChange(period);
   }
 
   function onMouseDragMove(e) {
