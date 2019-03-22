@@ -15,6 +15,9 @@ class Chart {
     this.currentAnimation = null;
     this.predictStageSteps = 0;
 
+    this.lastShiftX = null;
+    this.lastScaleX = null;
+
     this._createElement();
     this._listen();
   }
@@ -104,18 +107,16 @@ class Chart {
 
   _scrollMainChart(period) {
     cancelAnimationFrame(this.currentAnimationId);
-    if (this.lastShiftX) {
+    if (this.lastShiftX !== null) {
       this.mainChart.setView({
         scaleX: this.lastScaleX,
         shiftX: this.lastShiftX,
       });
     }
 
-    const {scaleX, shiftX} = this.mainChart.view;
+    const {scaleX, shiftX, scaleY} = this.mainChart.view;
     const newScaleX = (this.chartMap.view.width / period.width);
     const newShiftX = period.left * newScaleX;
-
-    // this.mainChart.setView({ scaleX: newScaleX });
 
     animate({
       context: this,
@@ -138,13 +139,14 @@ class Chart {
   _listen() {
     this.chartMap.setPeriodEventTarget(this.element);
     this.element.addEventListener('period', (e) => {
-      this._scrollMainChart(e.detail.period);
 
       this._calculateIndexes(e.detail.period);
       this.currentLocalPeak = this.store.getLocalPeak(this.indexStart, this.indexEnd);
       this.mainChart.setView({ scaleY: this.store.globalPeak / this.currentLocalPeak });
 
-      // const peakForNextIndexes = this._getPeakForNextIndexes(e.detail.period);
+      this._scrollMainChart(e.detail.period);
+
+      const peakForNextIndexes = this._getPeakForNextIndexes(e.detail.period);
       //
       // if (this.lastPeriodMovementType !== e.detail.period.movementType) {
       //   this.predictStageSteps = 0;
@@ -154,7 +156,7 @@ class Chart {
       //   this.predictStageSteps++;
       // }
 
-      // console.log(e.detail.period.movementType, this.lastLocalPeak, this.currentLocalPeak, peakForNextIndexes);
+      console.log(e.detail.period.movementType, this.currentLocalPeak, peakForNextIndexes);
 
       // if (this.lastLocalPeak && this.currentLocalPeak !== this.lastLocalPeak) { // момент изменения пика
       //   this._cancelMainChartAlignment();
