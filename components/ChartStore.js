@@ -12,7 +12,7 @@ class ChartStore {
     const N = x.length;
 
     const globalDX = this._getDX(x, 1, N-1);
-    const globalPeak = this._getPeak(lines, 1, N-1);
+    const globalPeak = this._getPeak(lines, 1, N-1).peak;
 
     const outputLines = lines.map((line) => {
       return {
@@ -53,7 +53,10 @@ class ChartStore {
         }
       }
     }
-    return lines[I][J];
+    return {
+      peak: lines[I][J],
+      index: J,
+    }
   }
 
   getLocalPeak(startIndex, endIndex) {
