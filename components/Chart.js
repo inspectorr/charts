@@ -178,7 +178,9 @@ class Chart {
       const widthIndex = this._mapPxToIndex(period.width);
       const closestPeakData = this._getClosestPeakData(shiftIndex, widthIndex, period.movementType);
 
-      let go = this.predictedPeakIndex !== closestPeakData.index;
+      let treshold = this.chartMap.view.width * 0.05;
+
+      let go = this.predictedPeakIndex !== closestPeakData.index || period.shift > treshold;
       // if (this.predictedPeakIndex === closestPeakData.index && this.currentLocalPeak === closestPeakData.index) {
       //   go = true;
       // }
