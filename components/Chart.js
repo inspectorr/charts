@@ -189,17 +189,22 @@ class Chart {
 
       const treshold = this.mainChart.view.width * 0.01;
 
+      let block = false;
+      if (this.currentLocalPeak === this.predictedPeak) {
+        block = true;
+      }
+
       if (period.shift > treshold) {
         const shiftIndex = this._mapPxToIndex(period.shift);
         const widthIndex = this._mapPxToIndex(period.width);
         const closestPeakData = this._getClosestPeakData(shiftIndex, widthIndex, period.movementType);
-        if (period.movementType === 'move-right' && this.currentLocalPeak !== this.predictedPeak) {
+        if (period.movementType === 'move-right' && !block) {
           this.predictedPeak = closestPeakData.peak;
           const promise = new Promise((done) => {
             this._alignMainChart(shiftIndex, closestPeakData.peak, closestPeakData.n, done);
           });
           promise.then(() => {
-            
+
           });
         }
         console.log(period.movementType, shiftIndex, closestPeakData.peak, closestPeakData.n);
