@@ -131,7 +131,7 @@ function PeriodSlider(options) {
     if (period.left !== newLeft) {
       period.left = newLeft;
       period.right = width - newLeft - period.width;
-      period.movementType = shiftX > lastShiftX ? 'move-right' : 'move-left';
+      period.movementType = shiftX > lastShiftX ? 'right' : 'left';
       period.shift = Math.abs(shiftX - lastShiftX);
 
       shiftZeroingTimer();
@@ -153,7 +153,7 @@ function PeriodSlider(options) {
     if (period.right !== newRight) {
       period.right = newRight;
       period.width = width - period.left - newRight;
-      period.movementType = shiftX > lastShiftX ? 'expand-right-plus' : 'expand-right-minus';
+      period.movementType = shiftX > lastShiftX ? 'right' : 'left';
       period.shift = Math.abs(shiftX - lastShiftX);
 
       shiftZeroingTimer();
@@ -175,7 +175,7 @@ function PeriodSlider(options) {
     if (period.left !== newLeft) {
       period.left = newLeft;
       period.width = width - newLeft - period.right;
-      period.movementType = shiftX > lastShiftX ? 'expand-left-minus' : 'expand-left-plus';
+      period.movementType = shiftX > lastShiftX ? 'left' : 'right';
       period.shift = Math.abs(shiftX - lastShiftX);
 
       shiftZeroingTimer();

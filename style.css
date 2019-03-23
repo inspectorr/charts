@@ -5,7 +5,7 @@ html {
 body {
   margin: 0;
   min-height: 100%;
-  background: #242F3E;
+  background: rgba(36, 47, 62, 1);
 }
 
 #root {
@@ -32,7 +32,7 @@ body {
 
 .out-left, .out-right {
   position: relative;
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: rgba(30, 41, 54, 0.75);
   flex: none;
   z-index: 1;
 }
@@ -48,34 +48,32 @@ body {
 .thumb {
   z-index: 2;
   position: relative;
-
+  border-style: solid;
+  border-color: rgba(92, 126, 152, 0.5);
+  border-width: 1.5px 0px 1.5px 0px;
   display: flex;
   flex: 1;
 }
 
 .thumb .center {
-  border-right: none;
-  border-left: none;
-  border-top: 1.5px solid rgba(64, 86, 107, 0.5);
-  border-bottom: 1.5px solid rgba(64, 86, 107, 0.5);
   cursor: pointer;
   flex: 1;
 }
 
 .thumb .left, .thumb .right {
-  border-top: 1.5px solid rgba(64, 86, 107, 0.5);
-  border-bottom: 1.5px solid rgba(64, 86, 107, 0.5);
   width: 15px;
   cursor: col-resize;
   flex: none;
 }
 
 .thumb .left {
-  border-left: 5px solid rgba(64, 86, 107, 0.5);
+  border: inherit;
+  border-width: 0px 0px 0px 5px;
   left: 0;
 }
 
 .thumb .right {
-  border-right: 5px solid rgba(64, 86, 107, 0.5);
+  border: inherit;
+  border-width: 0px 5px 0px 0px;
   right: 0;
 }

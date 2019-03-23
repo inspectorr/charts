@@ -15,7 +15,7 @@ const view = {
   chartMap: {
     width: 500,
     height: 50,
-    strokeWidth: 1,
+    strokeWidth: 1.3,
     thumb: {
       minWidth: 70,
       width: 100,
