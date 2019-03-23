@@ -58,23 +58,23 @@ class Chart {
 
     switch (movementType) {
       case 'move-right':
-        indexStart += shiftIndex;
+        // indexStart += shiftIndex;
         indexEnd += shiftIndex;
 
         if (indexEnd > lastIndex) {
           indexEnd = lastIndex;
-          indexStart = indexEnd - widthIndex;
+          // indexStart = indexEnd - widthIndex;
         }
 
         closestPeak = this.store.getLocalPeak(indexStart, indexEnd);
         break;
       case 'move-left':
-        indexStart -= shiftIndex;
+        // indexStart -= shiftIndex;
         indexEnd -= shiftIndex;
 
         if (indexStart < 0) {
           indexStart = 0;
-          indexEnd = indexStart + widthIndex;
+          // indexEnd = indexStart + widthIndex;
         }
 
         closestPeak = this.store.getLocalPeak(indexStart, indexEnd);
@@ -144,7 +144,7 @@ class Chart {
     const scaleDiff = Math.abs(newScaleY - scaleY);
     // console.log(scaleDiff);
 
-    let duration = scaleDiff * 400 + 400 / shift; ////////
+    let duration = scaleDiff * 300 + (shift ? 300 / shift : 0); ////////
     duration = Math.round(duration);
 
     console.log(duration);
@@ -169,36 +169,40 @@ class Chart {
     this.element.addEventListener('period', (e) => {
       const period = e.detail.period;
 
-      this._scrollMainChart(period);
-
       this._calculateIndexes(period);
       this.currentLocalPeak = this.store.getLocalPeak(this.indexStart, this.indexEnd);
+
+      if (period.shift === null) {
+        const scaleY = this.store.globalPeak / this.currentLocalPeak.peak;
+        const scaleX = (this.chartMap.view.width / period.width);
+        const shiftX = period.left * scaleX;
+        this.mainChart.setView({ scaleX, shiftX, scaleY });
+        return;
+      }
+
+      this._scrollMainChart(period);
 
       const shiftIndex = this._mapPxToIndex(period.shift);
       const widthIndex = this._mapPxToIndex(period.width);
       const closestPeakData = this._getClosestPeakData(shiftIndex, widthIndex, period.movementType);
 
-      let treshold = this.chartMap.view.width * 0.05;
+      let go = this.predictedPeakIndex !== closestPeakData.index;
+      let targetPeak = closestPeakData;
 
-      let go = this.predictedPeakIndex !== closestPeakData.index || period.shift > treshold;
-      // if (this.predictedPeakIndex === closestPeakData.index && this.currentLocalPeak === closestPeakData.index) {
-      //   go = true;
-      // }
+      console.log(this.currentLocalPeak.index, period.shift, this.predictedPeakIndex, closestPeakData.index, this.animationInProgress);
 
-      console.log(period.shift, this.predictedPeakIndex, closestPeakData.index, this.animationInProgress);
-      // if (shiftIndex && this.predictedPeakIndex !== closestPeakData.index && !this.animationInProgress) {
-      if (period.shift > 0 && go && !this.animationInProgress) {
-
+      if (go && !this.animationInProgress) {
         this.animationInProgress = true;
         new Promise((done) => {
-          console.log('animation');
-          this._alignMainChart(period.shift, closestPeakData.peak, done);
+          console.log(`animation to ${targetPeak.index}`);
+          this._alignMainChart(period.shift, targetPeak.peak, done);
         }).then(() => {
           this.animationInProgress = false;
         });
 
         this.predictedPeakIndex = closestPeakData.index;
       }
+
 
 
 

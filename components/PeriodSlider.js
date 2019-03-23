@@ -13,7 +13,7 @@ function PeriodSlider(options) {
     shiftZeroingTimerId = setTimeout(() => {
       period.shift = 0;
       onPeriodChange(period);
-    } , 300);
+    } , 100);
   }
 
   // let speedometer;
@@ -134,7 +134,7 @@ function PeriodSlider(options) {
       period.movementType = shiftX > lastShiftX ? 'move-right' : 'move-left';
       period.shift = Math.abs(shiftX - lastShiftX);
 
-      // shiftZeroingTimer();
+      shiftZeroingTimer();
       onPeriodChange(period);
 
       lastShiftX = shiftX;
@@ -156,7 +156,7 @@ function PeriodSlider(options) {
       period.movementType = shiftX > lastShiftX ? 'expand-right-plus' : 'expand-right-minus';
       period.shift = Math.abs(shiftX - lastShiftX);
 
-      // shiftZeroingTimer();
+      shiftZeroingTimer();
       onPeriodChange(period);
 
       lastShiftX = shiftX;
@@ -178,7 +178,7 @@ function PeriodSlider(options) {
       period.movementType = shiftX > lastShiftX ? 'expand-left-minus' : 'expand-left-plus';
       period.shift = Math.abs(shiftX - lastShiftX);
 
-      // shiftZeroingTimer();
+      shiftZeroingTimer();
       onPeriodChange(period);
 
       lastShiftX = shiftX;
