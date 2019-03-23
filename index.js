@@ -10,7 +10,7 @@ const view = {
   mainChart: {
     width: 500,
     height: 300,
-    strokeWidth: 1.5,
+    strokeWidth: 2,
   },
   chartMap: {
     width: 500,

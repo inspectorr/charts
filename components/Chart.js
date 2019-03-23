@@ -144,7 +144,7 @@ class Chart {
     const scaleDiff = Math.abs(newScaleY - scaleY);
     // console.log(scaleDiff);
 
-    let duration = scaleDiff * 300 + (shift ? 300 / shift : 0); ////////
+    let duration = scaleDiff * 200 + (shift ? 350 / shift : 0); ////////
     duration = Math.round(duration);
 
     console.log(duration);
@@ -186,12 +186,13 @@ class Chart {
       const widthIndex = this._mapPxToIndex(period.width);
       const closestPeakData = this._getClosestPeakData(shiftIndex, widthIndex, period.movementType);
 
-      let go = this.predictedPeakIndex !== closestPeakData.index;
+      let go = !this.animationInProgress && this.predictedPeakIndex !== closestPeakData.index;
+      if (this.animationInProgress && this.predictedPeakIndex !== this.currentLocalPeak.index) go = true;
       let targetPeak = closestPeakData;
-
+      //65 0 19 65 true
       console.log(this.currentLocalPeak.index, period.shift, this.predictedPeakIndex, closestPeakData.index, this.animationInProgress);
 
-      if (go && !this.animationInProgress) {
+      if (go) {
         this.animationInProgress = true;
         new Promise((done) => {
           console.log(`animation to ${targetPeak.index}`);
