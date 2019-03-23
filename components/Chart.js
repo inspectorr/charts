@@ -12,15 +12,22 @@ class Chart {
       view: options.view.chartMap,
     });
 
-    this.currentAnimation = null;
-    this.predictStageSteps = 0;
+    this.scrollAnimation = {
+      id: null,
+    };
+    this.alignAnimation = {
+      id: null,
+    };
+    this.bringAnimation = {
+      id: null,
+    };
 
     this.lastShiftX = null;
     this.lastScaleX = null;
+    this.lastScaleY = null;
 
     this._createElement();
-    this._listen();this.store.getLocalPeak(indexStart, indexEnd);
-          n = 1;
+    this._listen();
   }
 
   _createElement() {
@@ -45,77 +52,59 @@ class Chart {
   }
 
   _getClosestPeakData(shiftIndex, widthIndex, movementType) {
-    let closestPeak = this.currentLocalPeak, n = 0;
+    let currentPeak = this.currentLocalPeak;
+    let closestPeak = currentPeak, n = 0;
     let indexStart, indexEnd, lastIndex = this.store.lastIndex;
-
-    function getClosestPeak(indexStart, indexEnd, indexStartChangeFunc, indexEndChangeFunc) {
-      let closestPeak, peak, n = 0;
-      while (peak === this.currentLocalPeak && indexEnd <= this.store.lastIndex) {
-
-        peak = this.store.getLocalPeak(indexStart, indexEnd);
-        // if (peak > maxPeak) maxPeak = peak;
-        indexStart +=
-      }
-    }
 
     switch (movementType) {
       case 'move-right':
         indexStart = this.indexStart + shiftIndex;
         indexEnd = this.indexEnd + shiftIndex;
 
-        if (indexEnd > lastIndex) {
-          indexEnd = lastIndex;
-          indexStart = indexEnd - indexWidth;
+        while (closestPeak === currentPeak && indexEnd < lastIndex) {
           closestPeak = this.store.getLocalPeak(indexStart, indexEnd);
-          n = 1;
-          break;
-        }
-
-        while (closestPeak === this.currentLocalPeak && indexEnd < lastIndex) {
           indexStart += shiftIndex;
           indexEnd += shiftIndex;
-          closestPeak = this.store.getLocalPeak(indexStart, indexEnd);
+          n++;
         }
-        // if (this.indexEnd === this.store.lastIndex) {
-        //   peak = null;
-        // } else {
-        //   let closestPeak = this.store.getLocalPeak(this.indexStart+s, this.indexEnd+1)
-        //   while ()
-        //   // peak = this.store.getLocalPeak(this.indexStart+1, this.indexEnd+1);
-        // }
+
+        if (closestPeak === currentPeak) {
+          indexEnd = lastIndex;
+          indexStart = indexEnd - widthIndex;
+          closestPeak = this.store.getLocalPeak(indexStart, indexEnd);
+          n++;
+        }
+
+        console.log(currentPeak, closestPeak, n);
+
         break;
       case 'move-left':
-        if (this.indexStart === 0) peak = null;
-        else peak = this.store.getLocalPeak(this.indexStart-1, this.indexEnd-1);
+        // if (this.indexStart === 0) peak = null;
+        // else peak = this.store.getLocalPeak(this.indexStart-1, this.indexEnd-1);
         break;
       case 'expand-right-plus':
-        if (this.indexEnd === this.store.lastIndex) peak = null;
-        else peak = this.store.getLocalPeak(this.indexStart, this.indexEnd+1);
+        // if (this.indexEnd === this.store.lastIndex) peak = null;
+        // else peak = this.store.getLocalPeak(this.indexStart, this.indexEnd+1);
         break;
       case 'expand-right-minus':
-        peak = this.store.getLocalPeak(this.indexStart, this.indexEnd-1);
+        // peak = this.store.getLocalPeak(this.indexStart, this.indexEnd-1);
         break;
       case 'expand-left-plus':
-        if (this.indexStart === 0) peak = null;
-        else peak = this.store.getLocalPeak(this.indexStart-1, this.indexEnd);
+        // if (this.indexStart === 0) peak = null;
+        // else peak = this.store.getLocalPeak(this.indexStart-1, this.indexEnd);
         break;
       case 'expand-left-minus':
-        peak = this.store.getLocalPeak(this.indexStart+1, this.indexEnd);
+        // peak = this.store.getLocalPeak(this.indexStart+1, this.indexEnd);
         break;
     }
-    return peak;
-  }
-
-  _alignMainChart(steps) {
-
-  }
-
-  _cancelMainChartAlignment() {
-
+    return {
+      peak: closestPeak,
+      n
+    };
   }
 
   _scrollMainChart(period) {
-    cancelAnimationFrame(this.currentAnimationId);
+    cancelAnimationFrame(this.scrollAnimation.id);
 
     if (this.lastShiftX !== null) {
       this.mainChart.setView({
@@ -129,7 +118,7 @@ class Chart {
     const newShiftX = period.left * newScaleX;
 
     animate({
-      context: this,
+      context: this.scrollAnimation,
       duration: 100,
       timing: time => time,
       draw: (progress) => {
@@ -145,7 +134,49 @@ class Chart {
   }
 
   _mapPxToIndex(px) {
-    Math.round(px*this.store.lastIndex/this.chartMap.view.width);
+    return Math.round(px*this.store.lastIndex/this.chartMap.view.width);
+  }
+
+  _bringMainChart() {
+    const scaleY = this.mainChart.view.scaleY;
+    const newScaleY = this.store.globalPeak / this.currentLocalPeak;
+
+    animate({
+      context: this.bringAnimation,
+      duration: 400,
+      timing: time => Math.pow(time, 0.2),
+      draw: (progress) => {
+        this.mainChart.setView({
+          scaleY: scaleY + (newScaleY - scaleY)*progress,
+        });
+      }
+    });
+
+  }
+
+  _alignMainChart(shift, nextLocalPeak, n, done) {
+    // cancelAnimationFrame(this.alignAnimation.id);
+    const newScaleY = this.store.globalPeak / nextLocalPeak;
+    // if (newScaleY === this.lastScaleY) return;
+    // if (shift < 10) return;
+
+    const scaleY = this.mainChart.view.scaleY;
+
+    const duration = 200;
+
+    animate({
+      context: this.alignAnimation,
+      duration,
+      timing: time => time,
+      draw: (progress) => {
+        this.mainChart.setView({
+          scaleY: scaleY + (newScaleY - scaleY)*progress,
+        });
+        if (progress === 1) done();
+      }
+    });
+
+    this.lastScaleY = newScaleY;
   }
 
   _listen() {
@@ -156,17 +187,26 @@ class Chart {
       this._calculateIndexes(period);
       this.currentLocalPeak = this.store.getLocalPeak(this.indexStart, this.indexEnd);
 
-      if (period.shift) {
+      const treshold = this.mainChart.view.width * 0.01;
+
+      if (period.shift > treshold) {
         const shiftIndex = this._mapPxToIndex(period.shift);
         const widthIndex = this._mapPxToIndex(period.width);
         const closestPeakData = this._getClosestPeakData(shiftIndex, widthIndex, period.movementType);
+        if (period.movementType === 'move-right' && this.currentLocalPeak !== this.predictedPeak) {
+          this.predictedPeak = closestPeakData.peak;
+          const promise = new Promise((done) => {
+            this._alignMainChart(shiftIndex, closestPeakData.peak, closestPeakData.n, done);
+          });
+          promise.then(() => {
+            
+          });
+        }
+        console.log(period.movementType, shiftIndex, closestPeakData.peak, closestPeakData.n);
       }
 
-      console.log(period.movementType, period.shift);
-
-
       this._scrollMainChart(period);
-      this.mainChart.setView({ scaleY: this.store.globalPeak / this.currentLocalPeak });
+      // this.mainChart.setView({ scaleY: this.store.globalPeak / this.currentLocalPeak });
 
     });
   }
