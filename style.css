@@ -9,11 +9,13 @@ body {
 }
 
 #root {
-  text-align: left;
+  text-align: center;
 }
 
 .Chart {
   display: inline-block;
+  color: rgba(84, 103, 120, 1);
+  font-family: sans-serif;
 }
 
 .Chart .main {
@@ -21,6 +23,20 @@ body {
 
 .Chart .map {
   position: relative;
+}
+
+.Chart .time-row {
+  border-top: 1px solid rgba(84, 103, 120, 0.5);
+}
+
+.time {
+  display: inline-block;
+  font-weight: 400;
+  font-size: 0.85em;
+  text-align: center;
+  padding-top: 0.5em;
+
+  /* font-size: 8px; */
 }
 
 .slider {

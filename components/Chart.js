@@ -2,14 +2,36 @@ class Chart {
   constructor(options) {
     this.store = new ChartStore(options.data);
 
-    this.mainChart = new ChartView({
-      lines: this.store.outputLines,
-      view: options.view.mainChart,
-    });
-
+    const width = this._indexToPx(options.view.chartMap.thumb.days, options.view.chartMap.width);
+    const minWidth = this._indexToPx(options.view.chartMap.thumb.minDays, options.view.chartMap.width);
+    options.view.chartMap.thumb = Object.assign(options.view.chartMap.thumb, { width, minWidth });
     this.chartMap = new ChartMap({
       lines: this.store.outputLines,
       view: options.view.chartMap,
+    });
+
+    this.indexEnd = this.store.lastIndex;
+    this.indexStart = this.indexEnd - options.view.chartMap.thumb.days;
+    this.currentLocalPeak = this.store.getLocalPeak(this.indexStart, this.indexEnd);
+    const scaleY = this.store.globalPeak / this.currentLocalPeak.peak;
+    const scaleX = (this.chartMap.view.width / this.chartMap.period.width);
+    const shiftX = this.chartMap.period.left * scaleX;
+    const initialView = { scaleY, scaleX, shiftX };
+    this.mainChart = new MainChart({
+      times: this.store.times,
+      lines: this.store.outputLines,
+      view: Object.assign(options.view.mainChart, initialView),
+    });
+
+    this.timeRow = new TimeRow({
+      times: this.store.times,
+      indexStart: this.indexStart,
+      indexEnd: this.indexEnd,
+      lastIndex: this.store.lastIndex,
+      view: {
+        height: options.view.timeScale.height,
+        width: options.view.timeScale.width,
+      }
     });
 
     this.scrollAnimation = {
@@ -23,6 +45,9 @@ class Chart {
     this.lastScaleX = null;
     this.lastScaleY = null;
 
+    this.lastIndexStart = this.indexStart;
+    this.lastIndexEnd = this.indexEnd;
+
     this._createElement();
     this._listen();
   }
@@ -34,10 +59,14 @@ class Chart {
     const mainChartElement = this.mainChart.getElement();
     mainChartElement.classList.add('main');
 
+    const timeRowElement = this.timeRow.getElement();
+    timeRowElement.classList.add('time-row');
+
     const chartMapElement = this.chartMap.getElement();
     chartMapElement.classList.add('map');
 
     container.append(mainChartElement);
+    container.append(timeRowElement);
     container.append(chartMapElement);
 
     this.element = container;
@@ -102,6 +131,10 @@ class Chart {
     return Math.round(px*this.store.lastIndex/this.chartMap.view.width);
   }
 
+  _indexToPx(index, width) {
+    return Math.round(index*width/this.store.lastIndex);
+  }
+
   _alignMainChart(shift, nextLocalPeak, done) {
     cancelAnimationFrame(this.alignAnimation.id);
     const scaleY = this.mainChart.view.scaleY;
@@ -131,22 +164,18 @@ class Chart {
   }
 
   _listen() {
-    this.chartMap.setPeriodEventTarget(this.element);
-    this.element.addEventListener('period', (e) => {
+    this.chartMap.setPeriodEventTarget(this.mainChart.element);
+    this.mainChart.element.addEventListener('period', (e) => {
       const period = e.detail.period;
 
-      this._calculateIndexes(period);
-      this.currentLocalPeak = this.store.getLocalPeak(this.indexStart, this.indexEnd);
-
-      if (period.shift === null) {
-        const scaleY = this.store.globalPeak / this.currentLocalPeak.peak;
-        const scaleX = (this.chartMap.view.width / period.width);
-        const shiftX = period.left * scaleX;
-        this.mainChart.setView({ scaleX, shiftX, scaleY });
-        return;
-      }
-
       this._scrollMainChart(period);
+
+      this._calculateIndexes(period);
+      if (this.lastIndexStart === this.indexStart && this.lastIndexEnd === this.indexEnd) return;
+      this.lastIndexStart = this.indexStart;
+      this.lastIndexEnd = this.indexEnd;
+
+      this.currentLocalPeak = this.store.getLocalPeak(this.indexStart, this.indexEnd);
 
       const shiftIndex = this._mapPxToIndex(period.shift);
       const widthIndex = this._mapPxToIndex(period.width);
@@ -169,7 +198,7 @@ class Chart {
 
         this.predictedPeakIndex = closestPeakData.index;
       }
-      
+
     });
   }
 

@@ -1,14 +1,23 @@
 class ChartMap extends ChartView {
   constructor(options) {
     super(options);
+
+    this.period = {
+      width: options.view.thumb.width,
+      minWidth: options.view.thumb.minWidth,
+      left: options.view.width - options.view.thumb.width,
+      right: 0,
+      shift: null,
+      movementType: null,
+    };
+    console.log(this.period);
+
+    this._createSlider();
   }
 
-  _createElement() {
-    super._createElement();
-
+  _createSlider() {
     const {width, height} = this.view;
-    const {width:thumbWidth=100, minWidth:thumbMinWidth=70, right=0} = this.view.thumb;
-    const outLeftWidth = width - right - thumbWidth;
+    const {width:thumbWidth, left, right} = this.period;
 
     const slider = document.createElement('div');
     slider.classList.add('slider');
@@ -17,7 +26,7 @@ class ChartMap extends ChartView {
 
     const outLeft = document.createElement('div');
     outLeft.classList.add('out-left');
-    outLeft.style.width = outLeftWidth + 'px';
+    outLeft.style.width = left + 'px';
     slider.append(outLeft);
 
     const thumb = document.createElement('div');
@@ -34,20 +43,12 @@ class ChartMap extends ChartView {
 
     this.element.append(slider);
 
-    this.period = {
-      left: outLeftWidth,
-      width: thumbWidth,
-      right: width - outLeftWidth - thumbWidth,
-      shift: null,
-      movementType: null,
-    };
-
     // !!! осторожно: слайдера еще нет в DOM.
     new PeriodSlider({
       slider, width,
-      outLeft, outLeftWidth,
+      outLeft,
       outRight,
-      thumb, thumbWidth, thumbMinWidth,
+      thumb,
       period: this.period,
       onPeriodChange: this._onPeriodChange.bind(this),
     });
@@ -64,7 +65,6 @@ class ChartMap extends ChartView {
   }
 
   onMount() {
-    this._onPeriodChange(this.period);
   }
 
   setPeriodEventTarget(target) {

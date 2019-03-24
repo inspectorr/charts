@@ -1,11 +1,16 @@
 function PeriodSlider(options) {
   const {
     slider, width,
-    outLeft, outLeftWidth,
+    // outLeft, outLeftWidth,
+    outLeft,
     outRight,
-    thumb, thumbWidth, thumbMinWidth,
+    thumb,
+    // thumb, thumbWidth, thumbMinWidth,
     period, onPeriodChange
   } = options;
+
+  const thumbMinWidth = period.minWidth;
+  // console.log(period);
 
   let shiftZeroingTimerId;
   function shiftZeroingTimer() {

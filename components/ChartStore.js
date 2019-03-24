@@ -22,13 +22,38 @@ class ChartStore {
       };
     });
 
-    for (let i = 0; i < lines.length; i++) {
-      for (let j = 1; j < N; j++) {
+    const times = [];
+
+
+    for (let j = 1; j < N; j++) {
+      for (let i = 0; i < lines.length; i++) {
         const xCoord = (x[j] - x[1]) / globalDX;
         const yCoord = lines[i][j] / globalPeak;
         outputLines[i].points += `${xCoord} ${yCoord} `;
       }
+      const time = (new Date(x[j])).toDateString().split(' ');
+      if (+time[2] % 2 !== 0) continue;
+      times.push({
+        day: time[0],
+        month: time[1],
+        date: time[2].length < 2 ? time[2][2] : time[2],
+      });
     }
+
+
+    // for (let i = 0; i < lines.length; i++) {
+    //   for (let j = 1; j < N; j++) {
+    //     const xCoord = (x[j] - x[1]) / globalDX;
+    //     const yCoord = lines[i][j] / globalPeak;
+    //     outputLines[i].points += `${xCoord} ${yCoord} `;
+    //     const time = (new Date(x[j])).toDateString().split(' ');
+    //     times.push({
+    //       day: time[0],
+    //       month: time[1],
+    //       date: time [2],
+    //     });
+    //   }
+    // }
 
     this.lastIndex = N-2;
     this.x = x;
@@ -36,6 +61,7 @@ class ChartStore {
     this.globalDX = globalDX;
     this.globalPeak = globalPeak;
 
+    this.times = times;
     this.outputLines = outputLines;
   }
 
