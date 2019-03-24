@@ -8,12 +8,12 @@ const clientWidth = document.documentElement.clientWidth;
 
 const view = {
   mainChart: {
-    width: 500,
+    width: clientWidth,
     height: 300,
     strokeWidth: 2,
   },
   chartMap: {
-    width: 500,
+    width: clientWidth,
     height: 50,
     strokeWidth: 1.3,
     thumb: {
