@@ -6,6 +6,8 @@ body {
   margin: 0;
   min-height: 100%;
   background: rgba(36, 47, 62, 1);
+  /* touch-action: none; */
+  -webkit-touch-callout: none;
 }
 
 #root {
@@ -16,9 +18,17 @@ body {
   display: inline-block;
   color: rgba(84, 103, 120, 1);
   font-family: sans-serif;
+  margin-bottom: 5em;
+}
+
+.Chart .header {
+  text-align: left;
+  font-weight: 550;
+  color: white;
 }
 
 .Chart .main {
+  border-bottom: 1px solid rgba(84, 103, 120, 0.5);
 }
 
 .Chart .map {
@@ -26,18 +36,34 @@ body {
 }
 
 .Chart .time-row {
-  border-top: 1px solid rgba(84, 103, 120, 0.5);
+  overflow: hidden;
+  position: relative;
+}
+
+.exp-left {
+  text-align: right;
 }
 
 .time {
+  overflow: hidden;
   display: inline-block;
+  position: relative;
+  white-space: nowrap;
+  overflow: hidden;
   font-weight: 400;
   font-size: 0.85em;
   text-align: center;
   padding-top: 0.5em;
-
-  /* font-size: 8px; */
 }
+
+.time-moving {
+  position: absolute;
+}
+
+.time-opacity {
+
+}
+
 
 .slider {
   position: absolute;
@@ -62,6 +88,7 @@ body {
 }
 
 .thumb {
+  box-sizing: border-box;
   z-index: 2;
   position: relative;
   border-style: solid;

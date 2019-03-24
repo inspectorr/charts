@@ -36,7 +36,7 @@ class ChartStore {
       times.push({
         day: time[0],
         month: time[1],
-        date: time[2].length < 2 ? time[2][2] : time[2],
+        date: time[2][0] === '0' ? time[2][1] : time[2],
       });
     }
 

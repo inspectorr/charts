@@ -1,10 +1,8 @@
 'use strict';
 
-console.log(chartsData);
-
 const root = document.getElementById('root');
-
-const width = document.documentElement.clientWidth - 20;
+let width = document.documentElement.clientWidth - 50;
+if (width > 800) width = 800;
 
 const view = {
   mainChart: {
@@ -17,8 +15,8 @@ const view = {
     height: 50,
     strokeWidth: 1.3,
     thumb: {
-      days: 20,
-      minDays: 12,
+      days: 24,
+      minDays: 24,
       minWidth: 70,
       width: 100,
       right: 0,
@@ -30,9 +28,10 @@ const view = {
   }
 }
 
-const chart = new Chart({ data: chartsData[0], view });
-
-// console.log(chart.store.times);
-
-root.append(chart.getElement());
-chart.onMount();
+function init(chartData) {
+  console.log(chartData);
+  chartData.forEach((data, index) => {
+    const chart = new Chart({ data, index, view });
+    root.append(chart.getElement());
+  });
+}

@@ -10,16 +10,16 @@ class ChartMap extends ChartView {
       shift: null,
       movementType: null,
     };
-    console.log(this.period);
 
     this._createSlider();
   }
 
   _createSlider() {
     const {width, height} = this.view;
-    const {width:thumbWidth, left, right} = this.period;
+    const {width:thumbWidth, minWidth:thumbMinWidth, left, right} = this.period;
 
     const slider = document.createElement('div');
+    slider.addEventListener('touchstart', (e) => e.preventDefault());
     slider.classList.add('slider');
     slider.style.height = height + 'px';
     slider.style.width = width + 'px';
@@ -34,6 +34,8 @@ class ChartMap extends ChartView {
     thumb.style.width = thumbWidth + 'px';
     thumb.style.height = height + 'px';
     thumb.innerHTML = '<div class="left"></div><div class="center"></div><div class="right"></div>';
+    thumb.querySelector('.left').style.width = 0.25*thumbMinWidth + 'px';
+    thumb.querySelector('.right').style.width = 0.25*thumbMinWidth + 'px';
     slider.append(thumb);
 
     const outRight = document.createElement('div');

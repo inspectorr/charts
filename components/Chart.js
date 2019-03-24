@@ -1,6 +1,7 @@
 class Chart {
   constructor(options) {
     this.store = new ChartStore(options.data);
+    this.num = options.index;
 
     const width = this._indexToPx(options.view.chartMap.thumb.days, options.view.chartMap.width);
     const minWidth = this._indexToPx(options.view.chartMap.thumb.minDays, options.view.chartMap.width);
@@ -55,6 +56,11 @@ class Chart {
   _createElement() {
     const container = document.createElement('div');
     container.classList.add('Chart');
+    container.style.maxWidth = this.mainChart.view.width;
+
+    const header = document.createElement('h2');
+    header.classList.add('header');
+    header.textContent = `Chart ${this.num}`;
 
     const mainChartElement = this.mainChart.getElement();
     mainChartElement.classList.add('main');
@@ -65,6 +71,7 @@ class Chart {
     const chartMapElement = this.chartMap.getElement();
     chartMapElement.classList.add('map');
 
+    container.append(header);
     container.append(mainChartElement);
     container.append(timeRowElement);
     container.append(chartMapElement);
@@ -81,13 +88,13 @@ class Chart {
     let closestPeak, currentPeak = this.currentLocalPeak;
     let indexStart = this.indexStart, indexEnd = this.indexEnd, lastIndex = this.store.lastIndex;
 
-    switch (movementType) {
-      case 'right':
+    switch (movementType[0]) {
+      case 'r':
         indexEnd += shiftIndex;
         if (indexEnd > lastIndex) indexEnd = lastIndex;
         closestPeak = this.store.getLocalPeak(indexStart, indexEnd);
         break;
-      case 'left':
+      case 'l':
         indexEnd -= shiftIndex;
         if (indexStart < 0) indexStart = 0;
         closestPeak = this.store.getLocalPeak(indexStart, indexEnd);
@@ -146,7 +153,7 @@ class Chart {
     let duration = shift ? 500 / shift : 0; ////////
     duration = Math.round(duration);
 
-    console.log(duration);
+    // console.log(duration);
 
     animate({
       context: this.alignAnimation,
@@ -172,8 +179,9 @@ class Chart {
 
       this._calculateIndexes(period);
       if (this.lastIndexStart === this.indexStart && this.lastIndexEnd === this.indexEnd) return;
-      this.lastIndexStart = this.indexStart;
-      this.lastIndexEnd = this.indexEnd;
+      this.lastIndexStart = this.indexStart; this.lastIndexEnd = this.indexEnd;
+      // console.log(this.indexStart, this.indexEnd);
+      this.timeRow.changeIndexes(period.movementType, this.indexStart, this.indexEnd);
 
       this.currentLocalPeak = this.store.getLocalPeak(this.indexStart, this.indexEnd);
 
@@ -185,12 +193,16 @@ class Chart {
       let newRequired = this.animationInProgress && this.predictedPeakIndex !== this.currentLocalPeak.index;
       let targetPeak = closestPeakData;
 
-      console.log(period.movementType, this.currentLocalPeak.index, period.shift, this.predictedPeakIndex, closestPeakData.index, this.animationInProgress);
+      // console.log(period.movementType, this.currentLocalPeak.index, period.shift, this.predictedPeakIndex, closestPeakData.index, this.animationInProgress);
+
+      // const treshold = this.chartMap.view.width * 0.1;
+      // console.log(period.shift, treshold);
+      // if (period.shift > treshold) return;
 
       if (predictionChanged || newRequired) {
         this.animationInProgress = true;
         new Promise((done) => {
-          console.log(`animation to ${targetPeak.index}`);
+          // console.log(`animation to ${targetPeak.index}`);
           this._alignMainChart(period.shift, targetPeak.peak, done);
         }).then(() => {
           this.animationInProgress = false;
