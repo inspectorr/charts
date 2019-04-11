@@ -15,8 +15,8 @@ const view = {
     height: 50,
     strokeWidth: 1.3,
     thumb: {
-      days: 24,
-      minDays: 24,
+      // days: 24,
+      // minDays: 24,
       minWidth: 70,
       width: 100,
       right: 0,
@@ -28,10 +28,13 @@ const view = {
   }
 }
 
-function init(chartData) {
-  console.log(chartData);
-  chartData.forEach((data, index) => {
-    const chart = new Chart({ data, index, view });
-    root.append(chart.getElement());
-  });
+function init(data) {
+  console.log(data);
+  const chart = new Chart({data: data[0], view});
+  root.append(chart.getElement());
+  // const chart = new Chart({ data[0], view });
+  // chartData.forEach((data, index) => {
+  //   const chart = new Chart({ data, index, view });
+  //   root.append(chart.getElement());
+  // });
 }

@@ -1,38 +1,24 @@
 class Chart {
   constructor(options) {
     this.store = new ChartStore(options.data);
-    this.num = options.index;
 
-    const width = this._indexToPx(options.view.chartMap.thumb.days, options.view.chartMap.width);
-    const minWidth = this._indexToPx(options.view.chartMap.thumb.minDays, options.view.chartMap.width);
-    options.view.chartMap.thumb = Object.assign(options.view.chartMap.thumb, { width, minWidth });
+
     this.chartMap = new ChartMap({
       lines: this.store.outputLines,
       view: options.view.chartMap,
     });
 
     this.indexEnd = this.store.lastIndex;
-    this.indexStart = this.indexEnd - options.view.chartMap.thumb.days;
+    this.indexStart = this.indexEnd - this._mapPxToIndex(options.view.chartMap.thumb.width);
     this.currentLocalPeak = this.store.getLocalPeak(this.indexStart, this.indexEnd);
+
     const scaleY = this.store.globalPeak / this.currentLocalPeak.peak;
     const scaleX = (this.chartMap.view.width / this.chartMap.period.width);
     const shiftX = this.chartMap.period.left * scaleX;
-    const initialView = { scaleY, scaleX, shiftX };
-    this.mainChart = new MainChart({
+    this.mainChart = new ChartView({
       times: this.store.times,
       lines: this.store.outputLines,
-      view: Object.assign(options.view.mainChart, initialView),
-    });
-
-    this.timeRow = new TimeRow({
-      times: this.store.times,
-      indexStart: this.indexStart,
-      indexEnd: this.indexEnd,
-      lastIndex: this.store.lastIndex,
-      view: {
-        height: options.view.timeScale.height,
-        width: options.view.timeScale.width,
-      }
+      view: Object.assign(options.view.mainChart, { scaleY, scaleX, shiftX }),
     });
 
     this.scrollAnimation = {
@@ -65,15 +51,11 @@ class Chart {
     const mainChartElement = this.mainChart.getElement();
     mainChartElement.classList.add('main');
 
-    const timeRowElement = this.timeRow.getElement();
-    timeRowElement.classList.add('time-row');
-
     const chartMapElement = this.chartMap.getElement();
     chartMapElement.classList.add('map');
 
     container.append(header);
     container.append(mainChartElement);
-    container.append(timeRowElement);
     container.append(chartMapElement);
 
     this.element = container;
@@ -149,8 +131,8 @@ class Chart {
 
     const scaleDiff = Math.abs(newScaleY - scaleY);
 
-    // let duration = scaleDiff * 200 + (shift ? 350 / shift : 0); ////////
-    let duration = shift ? 500 / shift : 0; ////////
+    let duration = scaleDiff * 200 + (shift ? 350 / shift : 0); ////////
+    // let duration = shift ? 500 / shift : 0; ////////
     duration = Math.round(duration);
 
     // console.log(duration);
@@ -180,8 +162,6 @@ class Chart {
       this._calculateIndexes(period);
       if (this.lastIndexStart === this.indexStart && this.lastIndexEnd === this.indexEnd) return;
       this.lastIndexStart = this.indexStart; this.lastIndexEnd = this.indexEnd;
-      // console.log(this.indexStart, this.indexEnd);
-      this.timeRow.changeIndexes(period.movementType, this.indexStart, this.indexEnd);
 
       this.currentLocalPeak = this.store.getLocalPeak(this.indexStart, this.indexEnd);
 
@@ -193,16 +173,9 @@ class Chart {
       let newRequired = this.animationInProgress && this.predictedPeakIndex !== this.currentLocalPeak.index;
       let targetPeak = closestPeakData;
 
-      // console.log(period.movementType, this.currentLocalPeak.index, period.shift, this.predictedPeakIndex, closestPeakData.index, this.animationInProgress);
-
-      // const treshold = this.chartMap.view.width * 0.1;
-      // console.log(period.shift, treshold);
-      // if (period.shift > treshold) return;
-
       if (predictionChanged || newRequired) {
         this.animationInProgress = true;
         new Promise((done) => {
-          // console.log(`animation to ${targetPeak.index}`);
           this._alignMainChart(period.shift, targetPeak.peak, done);
         }).then(() => {
           this.animationInProgress = false;

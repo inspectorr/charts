@@ -17,16 +17,17 @@
     <script type="text/javascript" src="components/ChartView.js"></script>
     <script type="text/javascript" src="components/PeriodSlider.js"></script>
     <script type="text/javascript" src="components/ChartMap.js"></script>
-    <script type="text/javascript" src="components/MainChart.js"></script>
-    <script type="text/javascript" src="components/TimeRow.js"></script>
     <script type="text/javascript" src="components/Chart.js"></script>
     <script type="text/javascript" src="index.js"></script>
     <script type="text/javascript">
-      fetch('chart_data.json')
-        .then((res) => res.json())
-        .then((data) => {
-          init(data);
-        });
+      (async () => {
+        const data = await Promise.all([...Array(5)].map(async (item, i) => {
+          item = await fetch(`data/${i+1}/overview.json`);
+          item = await item.json();
+          return item;
+        }));
+        init(data);
+      })()
     </script>
   </body>
 </html>
